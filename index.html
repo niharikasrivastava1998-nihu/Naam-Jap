@@ -3,172 +3,240 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shri Radha Kripa Pro</title>
+    <title>Shri Radha Ecosystem Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --lotus: #C0396B; --saffron: #E8A020; --cream: #FAF3E8; }
-        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; }
+        :root { --lotus: #C0396B; --saffron: #E8A020; --cream: #FAF3E8; --gold: #D4AF37; }
         
-        .app-shell { max-width: 480px; margin: 0 auto; height: 100vh; display: flex; flex-direction: column; background: #fff; position: relative; }
-        .content-area { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 120px; }
+        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
         
-        /* Dashboard Grid */
-        .tab-grid { display: grid; grid-template-columns: repeat(3, 1-fr); gap: 15px; }
-        .tab-item { background: white; border-radius: 20px; padding: 15px; text-align: center; border: 1px solid #f3f4f6; transition: 0.3s; cursor: pointer; }
-        .tab-item:active { transform: scale(0.9); background: #fce7f3; }
+        /* Smooth View Transitions */
+        .view-section { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; animation: slideUp 0.3s ease-out; }
+        .view-section.active { display: block; }
         
-        /* Calendar */
-        .calendar-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; text-align: center; font-size: 12px; }
-        .cal-day { padding: 8px; border-radius: 8px; background: #f9fafb; }
-        .cal-today { background: var(--lotus); color: white; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .hidden { display: none; }
-        .active-tab { display: block !important; }
+        /* Dashboard Grid Styling */
+        .grid-card { background: white; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid rgba(192, 57, 107, 0.05); transition: 0.2s; }
+        .grid-card:active { transform: scale(0.92); background: #fff1f2; }
+
+        /* Bottom Nav Logic */
+        .nav-item.active-nav { color: var(--lotus); }
+        .nav-item.active-nav div { background: #fce7f3; transform: translateY(-5px); }
+
+        /* Calendar Styling */
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+        .cal-cell { aspect-ratio: 1; display: flex; items-center: center; justify-content: center; font-size: 0.8rem; border-radius: 50%; transition: 0.2s; }
+        .cal-today { background: var(--lotus); color: white; font-weight: bold; }
         
-        .mood-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--lotus); font-size: 12px; transition: 0.3s; }
-        .mood-active { background: var(--lotus); color: white; }
+        /* GPT Bubbles */
+        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; margin-bottom: 12px; font-size: 0.9rem; }
+        .bot { background: white; border: 1px solid #eee; border-bottom-left-radius: 4px; }
+        .user { background: var(--lotus); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
     </style>
 </head>
-<body>
+<body class="flex justify-center">
 
-<div class="app-shell shadow-2xl">
-    <header class="p-4 flex justify-between items-center bg-white border-b sticky top-0 z-50">
-        <h1 class="text-xl font-bold text-pink-800 hindi" onclick="showDashboard()">।। श्री राधा कृपा ।।</h1>
-        <button onclick="showDashboard()" class="text-xl">🏠</button>
+<div class="w-full max-w-md h-screen bg-white shadow-2xl relative flex flex-col overflow-hidden">
+    
+    <header class="p-5 flex justify-between items-center bg-white/80 backdrop-blur-md z-50 border-b border-stone-50">
+        <div>
+            <h1 id="header-title" class="text-xl font-bold text-pink-800 hindi">श्री राधा कृपा</h1>
+            <p class="text-[9px] uppercase tracking-widest opacity-40 font-bold">Vrindavan Ecosystem</p>
+        </div>
+        <div class="flex gap-3">
+            <button onclick="switchView('home')" class="p-2 bg-stone-100 rounded-full">🏠</button>
+        </div>
     </header>
 
-    <div class="content-area">
+    <main class="flex-1 relative overflow-hidden bg-[#FAF3E8]/30">
         
-        <div id="tab-home" class="tab-pane active-tab">
-            <div class="tab-grid grid grid-cols-3 gap-3">
-                <div class="tab-item shadow-sm" onclick="openTab('jap')"><div class="text-2xl">📿</div><p class="text-[10px] mt-1 font-bold">Naam Jap</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('gpt')"><div class="text-2xl">🙏</div><p class="text-[10px] mt-1 font-bold">GPT Guidance</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('quotes')"><div class="text-2xl">✨</div><p class="text-[10px] mt-1 font-bold">Mood Quotes</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('calendar')"><div class="text-2xl">📅</div><p class="text-[10px] mt-1 font-bold">Calendar</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('hub')"><div class="text-2xl">🌐</div><p class="text-[10px] mt-1 font-bold">Bhakti Hub</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('aarti')"><div class="text-2xl">📜</div><p class="text-[10px] mt-1 font-bold">Aarti Sangrah</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('leela')"><div class="text-2xl">🌸</div><p class="text-[10px] mt-1 font-bold">Daily Leela</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('ashtakam')"><div class="text-2xl">🕉️</div><p class="text-[10px] mt-1 font-bold">Ashtakam</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('darshan')"><div class="text-2xl">🏰</div><p class="text-[10px] mt-1 font-bold">Braj Darshan</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('diary')"><div class="text-2xl">✍️</div><p class="text-[10px] mt-1 font-bold">Sewa Diary</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('sewa')"><div class="text-2xl">🎁</div><p class="text-[10px] mt-1 font-bold">Donations</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('books')"><div class="text-2xl">📚</div><p class="text-[10px] mt-1 font-bold">E-Books</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('wallpapers')"><div class="text-2xl">🖼️</div><p class="text-[10px] mt-1 font-bold">Wallpaper</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('community')"><div class="text-2xl">🤝</div><p class="text-[10px] mt-1 font-bold">Community</p></div>
-                <div class="tab-item shadow-sm" onclick="openTab('settings')"><div class="text-2xl">⚙️</div><p class="text-[10px] mt-1 font-bold">Settings</p></div>
+        <section id="view-home" class="view-section active p-5">
+            <div class="grid grid-cols-3 gap-4">
+                <button onclick="switchView('jap')" class="grid-card"><span>📿</span><p class="text-[10px] mt-2 font-bold uppercase">Naam Jap</p></button>
+                <button onclick="switchView('gpt')" class="grid-card"><span>🙏</span><p class="text-[10px] mt-2 font-bold uppercase">Guidance</p></button>
+                <button onclick="switchView('mood')" class="grid-card"><span>✨</span><p class="text-[10px] mt-2 font-bold uppercase">Mood Vani</p></button>
+                <button onclick="switchView('cal')" class="grid-card"><span>📅</span><p class="text-[10px] mt-2 font-bold uppercase">Calendar</p></button>
+                <button onclick="switchView('hub')" class="grid-card"><span>🌐</span><p class="text-[10px] mt-2 font-bold uppercase">Bhakti Hub</p></button>
+                <button onclick="switchView('aarti')" class="grid-card"><span>📜</span><p class="text-[10px] mt-2 font-bold uppercase">Aarti</p></button>
+                <button onclick="switchView('leela')" class="grid-card"><span>🌸</span><p class="text-[10px] mt-2 font-bold uppercase">Leela</p></button>
+                <button onclick="switchView('stotra')" class="grid-card"><span>🕉️</span><p class="text-[10px] mt-2 font-bold uppercase">Stotra</p></button>
+                <button onclick="switchView('braj')" class="grid-card"><span>🏰</span><p class="text-[10px] mt-2 font-bold uppercase">Darshan</p></button>
+                <button onclick="switchView('diary')" class="grid-card"><span>✍️</span><p class="text-[10px] mt-2 font-bold uppercase">Diary</p></button>
+                <button onclick="switchView('sewa')" class="grid-card"><span>🎁</span><p class="text-[10px] mt-2 font-bold uppercase">Sewa</p></button>
+                <button onclick="switchView('books')" class="grid-card"><span>📚</span><p class="text-[10px] mt-2 font-bold uppercase">Library</p></button>
+                <button onclick="switchView('art')" class="grid-card"><span>🖼️</span><p class="text-[10px] mt-2 font-bold uppercase">Art</p></button>
+                <button onclick="switchView('sangha')" class="grid-card"><span>🤝</span><p class="text-[10px] mt-2 font-bold uppercase">Sangha</p></button>
+                <button onclick="switchView('config')" class="grid-card"><span>⚙️</span><p class="text-[10px] mt-2 font-bold uppercase">Settings</p></button>
             </div>
-        </div>
+        </section>
 
-        <div id="tab-quotes" class="tab-pane hidden">
-            <h2 class="text-xl font-bold mb-4 hindi text-pink-800">आपका भाव (Your Mood)</h2>
-            <div class="flex flex-wrap gap-2 mb-6">
-                <button class="mood-btn" onclick="updateMood('sad')">Upset 😔</button>
-                <button class="mood-btn" onclick="updateMood('peace')">Peaceful 🧘</button>
-                <button class="mood-btn" onclick="updateMood('struggle')">Struggling 🌪️</button>
-                <button class="mood-btn" onclick="updateMood('joy')">Happy 🌸</button>
+        <section id="view-jap" class="view-section p-5 flex flex-col items-center justify-center">
+            <div class="mb-10 text-center">
+                <p class="text-xs uppercase tracking-widest opacity-50 mb-1">Mala Count</p>
+                <h2 id="mala-val" class="text-4xl font-bold text-pink-700">0</h2>
             </div>
-            <div id="quote-display" class="bg-pink-700 p-8 rounded-[2rem] text-white italic text-center text-lg shadow-xl">
-                Select your mood to receive Maharaj Ji's Vani.
-            </div>
-        </div>
+            <button onclick="handleJapTap()" class="w-56 h-56 bg-pink-700 rounded-full border-8 border-white shadow-2xl active:scale-95 transition flex flex-col items-center justify-center text-white">
+                <span class="hindi text-4xl mb-1">राधे</span>
+                <span id="bead-val" class="text-2xl opacity-60">0 / 108</span>
+            </button>
+        </section>
 
-        <div id="tab-calendar" class="tab-pane hidden">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold text-pink-800" id="monthName">Calendar 2024</h2>
-                <div class="flex gap-2">
-                    <button onclick="changeMonth(-1)" class="p-2">◀</button>
-                    <button onclick="changeMonth(1)" class="p-2">▶</button>
-                </div>
+        <section id="view-gpt" class="view-section flex flex-col">
+            <div id="chat-history" class="flex-1 p-5 overflow-y-auto flex flex-col">
+                <div class="bubble bot hindi shadow-sm">राधे राधे। आपको भक्ति में क्या समस्या आ रही है? पूछिए।</div>
             </div>
-            <div class="calendar-grid font-bold text-stone-400 mb-2">
-                <span>Su</span><span>Mo</span><span>Tu</span><span>We</span><span>Th</span><span>Fr</span><span>Sa</span>
+            <div class="p-4 bg-white border-t flex gap-2">
+                <input type="text" id="gpt-in" placeholder="Ask Maharaj Ji..." class="flex-1 p-3 rounded-xl bg-stone-100 outline-none text-sm">
+                <button onclick="runGPT()" class="bg-orange-600 text-white px-5 rounded-xl font-bold">Seek</button>
             </div>
-            <div id="calendar-days" class="calendar-grid"></div>
-            <div class="mt-6 p-4 bg-stone-100 rounded-xl text-xs text-stone-600">
-                <b>Note:</b> Upcoming Ekadashi: 14th April. Shri Radha Ashtami tracking active.
-            </div>
-        </div>
+        </section>
 
-        <div id="tab-jap" class="tab-pane hidden text-center">
-             <div class="text-4xl font-bold mb-4" id="jap-display">0</div>
-             <button onclick="doJap()" class="w-48 h-48 bg-pink-700 rounded-full text-white text-3xl shadow-2xl active:scale-95 transition mx-auto border-8 border-white">राधे</button>
-             <p class="mt-4 text-stone-500 uppercase tracking-widest text-xs">Total Malas: <span id="mala-total">0</span></p>
-        </div>
+        <section id="view-mood" class="view-section p-5">
+            <h2 class="text-xl font-bold mb-5 hindi text-pink-800">आपका वर्तमान भाव?</h2>
+            <div class="grid grid-cols-2 gap-3 mb-8">
+                <button onclick="getVani('sad')" class="p-4 bg-white border rounded-2xl text-sm">Upset 😔</button>
+                <button onclick="getVani('peace')" class="p-4 bg-white border rounded-2xl text-sm">Peaceful 🧘</button>
+                <button onclick="getVani('fear')" class="p-4 bg-white border rounded-2xl text-sm">Fearful 😨</button>
+                <button onclick="getVani('love')" class="p-4 bg-white border rounded-2xl text-sm">Devotional 🌸</button>
+            </div>
+            <div id="vani-card" class="bg-gradient-to-br from-pink-600 to-pink-900 p-8 rounded-[2rem] text-white text-center italic shadow-xl hidden"></div>
+        </section>
 
-        <div id="tab-gpt" class="tab-pane hidden">GPT Corner logic here...</div>
-        <div id="tab-hub" class="tab-pane hidden">Social Hub logic here...</div>
-        <div id="tab-aarti" class="tab-pane hidden">Aarti Sangrah logic here...</div>
-    </div>
+        <section id="view-cal" class="view-section p-5">
+            <div class="flex justify-between items-center mb-6">
+                <h3 id="cal-month" class="text-xl font-bold">Month</h3>
+                <div class="flex gap-2"><button onclick="moveMonth(-1)">◀</button><button onclick="moveMonth(1)">▶</button></div>
+            </div>
+            <div class="cal-grid font-bold text-center text-[10px] opacity-40 mb-2">
+                <span>SU</span><span>MO</span><span>TU</span><span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+            </div>
+            <div id="cal-days" class="cal-grid"></div>
+        </section>
+
+    </main>
+
+    <nav class="absolute bottom-0 left-0 right-0 h-24 bg-white/90 backdrop-blur-xl border-t border-stone-100 flex items-center justify-around px-4 z-[100]">
+        <button onclick="switchView('home')" class="nav-item flex flex-col items-center">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">🏠</div>
+            <span class="text-[8px] font-bold uppercase">Menu</span>
+        </button>
+        <button onclick="switchView('jap')" class="nav-item flex flex-col items-center">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">📿</div>
+            <span class="text-[8px] font-bold uppercase">Jap</span>
+        </button>
+        <button onclick="switchView('gpt')" class="nav-item flex flex-col items-center">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">🙏</div>
+            <span class="text-[8px] font-bold uppercase">Guidance</span>
+        </button>
+        <button onclick="switchView('cal')" class="nav-item flex flex-col items-center">
+            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">📅</div>
+            <span class="text-[8px] font-bold uppercase">Calendar</span>
+        </button>
+    </nav>
+
 </div>
 
 <script>
-    // --- Mood Quotes Data ---
-    const quotes = {
-        sad: "घबराओ मत, किशोरी जी सब देख रही हैं। बस नाम जप करते रहो।",
-        peace: "यह शांति ही राधा रानी का प्रसाद है। इसे व्यर्थ की बातों में मत खोना।",
-        struggle: "माया प्रबल है, पर राधा नाम उससे भी प्रबल है। पुकारते रहो।",
-        joy: "अपनी खुशी को राधा रानी के चरणों में अर्पित कर दो, यह और बढ़ जाएगी।"
-    };
-
-    function updateMood(mood) {
-        document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('mood-active'));
-        event.target.classList.add('mood-active');
-        document.getElementById('quote-display').innerText = quotes[mood];
-    }
-
-    // --- Tab Controller ---
-    function openTab(id) {
-        document.querySelectorAll('.tab-pane').forEach(t => t.classList.add('hidden'));
-        document.getElementById('tab-' + id).classList.remove('hidden');
-    }
-
-    function showDashboard() {
-        document.querySelectorAll('.tab-pane').forEach(t => t.classList.add('hidden'));
-        document.getElementById('tab-home').classList.remove('hidden');
-    }
-
-    // --- 12 Month Calendar Logic ---
-    let currentDate = new Date();
-    function renderCalendar() {
-        const monthDays = document.getElementById('calendar-days');
-        const monthName = document.getElementById('monthName');
-        monthDays.innerHTML = "";
+    // --- 1. CORE NAVIGATION LOGIC (The Error Fix) ---
+    function switchView(viewId) {
+        // Hide all views
+        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+        // Show target view
+        const target = document.getElementById('view-' + viewId);
+        if(target) target.classList.add('active');
         
-        const year = currentDate.getFullYear();
-        const month = currentDate.getMonth();
-        monthName.innerText = new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(currentDate);
+        // Update header
+        const titles = { home: 'श्री राधा कृपा', jap: 'नाम जप', gpt: 'मार्गदर्शन', mood: 'वाणी', cal: 'उत्सव कैलेंडर' };
+        document.getElementById('header-title').innerText = titles[viewId] || 'श्री राधा';
+        
+        // Update Bottom Nav Highlighting
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
+        const navMap = { home:0, jap:1, gpt:2, cal:3 };
+        if(navMap[viewId] !== undefined) document.querySelectorAll('.nav-item')[navMap[viewId]].classList.add('active-nav');
 
-        const firstDay = new Date(year, month, 1).getDay();
-        const totalDays = new Date(year, month + 1, 0).getDate();
+        if(viewId === 'cal') renderCal();
+    }
 
-        for (let i = 0; i < firstDay; i++) {
-            monthDays.innerHTML += `<div></div>`;
+    // --- 2. JAP LOGIC ---
+    let beads = 0, malas = 0;
+    function handleJapTap() {
+        beads++;
+        if(beads > 108) { beads = 1; malas++; }
+        document.getElementById('bead-val').innerText = `${beads} / 108`;
+        document.getElementById('mala-val').innerText = malas;
+        if(navigator.vibrate) navigator.vibrate(30);
+    }
+
+    // --- 3. MOOD LOGIC ---
+    const vanis = {
+        sad: "क्यों घबराते हो? श्री राधा जी सब देख रही हैं। बस नाम को पकड़ लो।",
+        peace: "शांति राधा रानी का प्रसाद है, इसे व्यर्थ के विवादों में मत खोना।",
+        fear: "माया कितनी भी डराए, तुम 'राधे राधे' पुकारते रहो। तुम सुरक्षित हो।",
+        love: "प्रेम ही मार्ग है, प्रेम ही गंतव्य है। निरंतर सेवा भाव रखें।"
+    };
+    function getVani(m) {
+        const card = document.getElementById('vani-card');
+        card.innerText = vanis[m];
+        card.classList.remove('hidden');
+    }
+
+    // --- 4. GPT REDIRECTION LOGIC ---
+    function runGPT() {
+        const pin = document.getElementById('gpt-in');
+        const history = document.getElementById('chat-history');
+        if(!pin.value) return;
+
+        history.innerHTML += `<div class="bubble user shadow-sm">${pin.value}</div>`;
+        const query = pin.value.toLowerCase();
+        pin.value = "";
+
+        setTimeout(() => {
+            let res = "राधे राधे। महाराज जी कहते हैं - निरंतर अभ्यास करें।";
+            let vid = "m-E6M97U5fA";
+            
+            if(query.includes("focus") || query.includes("ध्यान")) {
+                res = "मन का काम भागना है, जीभ का काम जपना। जीभ मत रोकिये।";
+                vid = "3NwZhYBZ_GE";
+            }
+            
+            history.innerHTML += `
+                <div class="bubble bot shadow-sm">
+                    <p class="mb-3">${res}</p>
+                    <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" class="block rounded-lg overflow-hidden border">
+                        <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" class="w-full">
+                        <div class="p-2 text-[10px] font-bold text-center">WATCH GUIDANCE ▶</div>
+                    </a>
+                </div>`;
+            history.scrollTop = history.scrollHeight;
+        }, 800);
+    }
+
+    // --- 5. CALENDAR LOGIC ---
+    let calDate = new Date();
+    function renderCal() {
+        const daysContainer = document.getElementById('cal-days');
+        const monthHeader = document.getElementById('cal-month');
+        daysContainer.innerHTML = "";
+        
+        const year = calDate.getFullYear();
+        const month = calDate.getMonth();
+        monthHeader.innerText = calDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+
+        const first = new Date(year, month, 1).getDay();
+        const total = new Date(year, month + 1, 0).getDate();
+
+        for(let i=0; i<first; i++) daysContainer.innerHTML += '<div></div>';
+        for(let i=1; i<=total; i++) {
+            const today = (i === new Date().getDate() && month === new Date().getMonth()) ? 'cal-today' : '';
+            daysContainer.innerHTML += `<div class="cal-cell ${today}">${i}</div>`;
         }
-        for (let i = 1; i <= totalDays; i++) {
-            const isToday = i === new Date().getDate() && month === new Date().getMonth() ? 'cal-today' : '';
-            monthDays.innerHTML += `<div class="cal-day ${isToday}">${i}</div>`;
-        }
     }
-
-    function changeMonth(dir) {
-        currentDate.setMonth(currentDate.getMonth() + dir);
-        renderCalendar();
-    }
-
-    // --- Jap Logic ---
-    let count = 0; let malas = 0;
-    function doJap() {
-        count++;
-        if(count > 108) { count = 1; malas++; }
-        document.getElementById('jap-display').innerText = count;
-        document.getElementById('mala-total').innerText = malas;
-        if(window.navigator.vibrate) window.navigator.vibrate(30);
-    }
+    function moveMonth(d) { calDate.setMonth(calDate.getMonth() + d); renderCal(); }
 
     // Init
-    renderCalendar();
+    switchView('home');
 </script>
-
 </body>
 </html>
