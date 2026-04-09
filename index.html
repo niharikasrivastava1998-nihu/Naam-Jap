@@ -11,17 +11,20 @@
         body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
 
         /* Navigation Engine */
-        .screen { position: absolute; inset: 0; padding-top: 80px; padding-bottom: 100px; opacity: 0; pointer-events: none; transition: opacity 0.2s; background: var(--cream); }
-        .screen.active { opacity: 1; pointer-events: auto; z-index: 50; }
+        .screen { position: absolute; inset: 0; padding-top: 80px; padding-bottom: 100px; display: none; background: var(--cream); z-index: 10; }
+        .screen.active { display: block; z-index: 50; pointer-events: auto; }
         
         /* Mala SVG Styling */
-        .bead { fill: #d1d5db; transition: fill 0.2s; stroke: rgba(0,0,0,0.05); }
+        .bead { fill: #d1d5db; transition: fill 0.2s; }
         .bead.filled { fill: var(--lotus); filter: drop-shadow(0 0 3px var(--lotus)); }
-        .bead.meru { fill: #E8A020; stroke: #fff; stroke-width: 1; }
+        .bead.meru { fill: #E8A020; }
 
         /* UI elements */
         .glass { background: white; border-radius: 24px; border: 1px solid rgba(192,57,107,0.1); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-        .nav-btn.active { color: var(--lotus); border-top: 3px solid var(--lotus); }
+        .nav-btn.active { color: var(--lotus); font-weight: bold; border-top: 3px solid var(--lotus); }
+        
+        /* GPT Bubble */
+        .youtube-card { background: #000; color: #fff; border-radius: 12px; padding: 15px; text-align: center; margin-top: 10px; cursor: pointer; border: 2px solid #E8A020; }
     </style>
 </head>
 <body>
@@ -29,50 +32,42 @@
     <header class="fixed top-0 inset-x-0 h-20 bg-white/90 backdrop-blur-md z-[100] border-b flex items-center justify-between px-6">
         <div>
             <h1 class="text-xl font-bold text-pink-800">श्री राधा कृपा</h1>
-            <p class="text-[9px] uppercase tracking-widest opacity-40">Official Ecosystem</p>
+            <p class="text-[9px] uppercase tracking-widest opacity-40">Direct Devotion Ecosystem</p>
         </div>
         <div class="text-2xl">🌸</div>
     </header>
 
     <main>
-        
         <section id="view-home" class="screen active p-6">
-            <div class="glass p-6 mt-4 text-center bg-gradient-to-br from-pink-50 to-white">
-                <p class="text-[10px] uppercase opacity-40 mb-2">Daily Vani</p>
-                <h2 id="mood-quote" class="text-lg italic text-pink-900">"राधा नाम ही जीवन का सार है।"</h2>
+            <div class="glass p-6 mt-4 text-center">
+                <p class="text-[10px] uppercase opacity-40 mb-2">Bhava of the day</p>
+                <h2 id="mood-quote" class="text-lg italic text-pink-900">"राधा नाम ही जीवन का परम सत्य है।"</h2>
             </div>
-
             <div class="grid grid-cols-2 gap-4 mt-6">
                 <div class="glass p-4 text-center">
                     <p class="text-[10px] opacity-50 uppercase">Malas</p>
                     <p id="stat-m" class="text-2xl font-bold">0</p>
                 </div>
                 <div class="glass p-4 text-center">
-                    <p class="text-[10px] opacity-50 uppercase">Total Japs</p>
+                    <p class="text-[10px] opacity-50 uppercase">Lifetime</p>
                     <p id="stat-j" class="text-2xl font-bold">0</p>
                 </div>
             </div>
-
-            <div class="mt-8">
-                <h3 class="font-bold mb-4">Your Mood?</h3>
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="updateMood('sad')" class="glass p-3 text-sm">Disturbed 🌪️</button>
-                    <button onclick="updateMood('peace')" class="glass p-3 text-sm">Peaceful 🧘</button>
-                </div>
+            <div class="mt-8 flex gap-2">
+                <button onclick="setMood('upset')" class="flex-1 glass p-3 text-sm">Disturbed 🌪️</button>
+                <button onclick="setMood('peace')" class="flex-1 glass p-3 text-sm">Peaceful 🧘</button>
             </div>
         </section>
 
         <section id="view-jap" class="screen flex flex-col items-center">
             <div class="mt-4 text-center">
                 <h2 id="disp-mala" class="text-4xl font-bold text-pink-800">0</h2>
-                <p class="text-[10px] uppercase opacity-40">Malas Done</p>
+                <p class="text-[10px] uppercase opacity-40">Malas Completed</p>
             </div>
-
-            <div class="relative w-80 h-80 mt-10">
-                <svg id="mala-svg" viewBox="0 0 200 200" class="w-full h-full -rotate-90">
-                    </svg>
+            <div class="relative w-80 h-80 mt-6">
+                <svg id="mala-svg" viewBox="0 0 200 200" class="w-full h-full -rotate-90"></svg>
                 <div class="absolute inset-0 flex items-center justify-center">
-                    <button onclick="handleJap()" class="w-40 h-40 rounded-full bg-gradient-to-br from-pink-600 to-pink-800 shadow-2xl flex flex-col items-center justify-center text-white border-4 border-white active:scale-95 transition-transform">
+                    <button onclick="handleJap()" class="w-44 h-44 rounded-full bg-gradient-to-br from-pink-600 to-pink-800 shadow-2xl flex flex-col items-center justify-center text-white border-4 border-white active:scale-90 transition-all">
                         <span class="text-4xl font-bold">राधे</span>
                         <span id="disp-bead" class="text-sm opacity-60">0 / 108</span>
                     </button>
@@ -81,14 +76,12 @@
         </section>
 
         <section id="view-gpt" class="screen flex flex-col">
-            <div id="chat-box" class="flex-1 p-5 space-y-4 overflow-y-auto bg-stone-50/50">
-                <div class="bg-white border p-4 rounded-2xl rounded-bl-none text-sm shadow-sm max-w-[85%]">
-                    राधे राधे! महाराज जी से अपने मन की बात पूछें।
-                </div>
+            <div id="chat-box" class="flex-1 p-5 space-y-4 overflow-y-auto">
+                <div class="bg-white border p-4 rounded-xl text-sm">राधे राधे! महाराज जी के प्रवचन के लिए प्रश्न पूछें।</div>
             </div>
             <div class="p-4 bg-white border-t flex gap-2">
-                <input type="text" id="gpt-input" placeholder="Ask Maharaj Ji..." class="flex-1 p-3 bg-stone-100 rounded-xl outline-none text-sm">
-                <button onclick="askGPT()" class="bg-pink-700 text-white px-6 rounded-xl font-bold">Seek</button>
+                <input type="text" id="gpt-input" placeholder="Ask anything..." class="flex-1 p-3 bg-stone-100 rounded-xl outline-none">
+                <button onclick="askGPT()" class="bg-pink-700 text-white px-6 rounded-xl font-bold">Ask</button>
             </div>
         </section>
 
@@ -97,19 +90,18 @@
                 <h2 id="month-name" class="text-xl font-bold">Calendar</h2>
                 <div class="flex gap-4"><button onclick="moveCal(-1)">◀</button><button onclick="moveCal(1)">▶</button></div>
             </div>
-            <div id="cal-grid" class="grid grid-cols-7 gap-1 text-center font-bold text-xs">
+            <div id="cal-grid" class="grid grid-cols-7 gap-1 text-center text-xs font-bold">
                 <span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>
-                </div>
-        </section>
-
-        <section id="view-links" class="screen px-6">
-            <h2 class="text-xl font-bold mb-6">Bhakti Library</h2>
-            <div class="space-y-4">
-                <a href="https://www.youtube.com/@BhajanMarg" target="_blank" class="block glass p-5 flex items-center gap-4">📺 YouTube: Bhajan Marg</a>
-                <a href="https://open.spotify.com/search/premanand%20ji" target="_blank" class="block glass p-5 flex items-center gap-4">🎧 Spotify Kirtan</a>
             </div>
         </section>
 
+        <section id="view-links" class="screen px-6">
+            <h2 class="text-xl font-bold mb-6">Social Links</h2>
+            <div class="space-y-4">
+                <a href="https://www.youtube.com/@BhajanMarg" target="_blank" class="block glass p-5">📺 Bhajan Marg YouTube</a>
+                <a href="http://googleusercontent.com/spotify.com/6" target="_blank" class="block glass p-5">🎧 Spotify Kirtan</a>
+            </div>
+        </section>
     </main>
 
     <nav class="fixed bottom-0 inset-x-0 h-20 bg-white border-t flex items-center justify-around z-[100]">
@@ -117,30 +109,24 @@
         <button onclick="nav('jap')" id="nav-jap" class="nav-btn flex-1 flex flex-col items-center"><span class="text-xl">📿</span><span class="text-[9px] uppercase font-bold">Jap</span></button>
         <button onclick="nav('gpt')" id="nav-gpt" class="nav-btn flex-1 flex flex-col items-center"><span class="text-xl">🙏</span><span class="text-[9px] uppercase font-bold">Guidance</span></button>
         <button onclick="nav('cal')" id="nav-cal" class="nav-btn flex-1 flex flex-col items-center"><span class="text-xl">📅</span><span class="text-[9px] uppercase font-bold">Cal</span></button>
-        <button onclick="nav('links')" id="nav-links" class="nav-btn flex-1 flex flex-col items-center"><span class="text-xl">📚</span><span class="text-[9px] uppercase font-bold">Links</span></button>
+        <button onclick="nav('links')" id="nav-links" class="nav-btn flex-1 flex flex-col items-center"><span class="text-xl">📚</span><span class="text-[9px] uppercase font-bold">Lib</span></button>
     </nav>
 
     <script>
-        // --- DATA ---
         let state = { jap: 0, malas: 0, total: 0 };
-        let currentMonth = new Date();
+        let curMonth = new Date();
 
-        // --- NAVIGATION (THE FIX) ---
         function nav(id) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            
             document.getElementById('view-' + id).classList.add('active');
             document.getElementById('nav-' + id).classList.add('active');
-
             if(id === 'cal') renderCal();
         }
 
-        // --- MALA SVG (FIXED NAMESPACE) ---
         function initMala() {
             const svg = document.getElementById('mala-svg');
             const NS = "http://www.w3.org/2000/svg";
-            svg.innerHTML = '';
             for (let i = 0; i < 108; i++) {
                 const angle = (i / 108) * Math.PI * 2;
                 const x = 100 + 85 * Math.cos(angle);
@@ -157,82 +143,60 @@
         function handleJap() {
             if(state.jap < 108) {
                 document.getElementById('bead-' + state.jap).classList.add('filled');
-                state.jap++;
-                state.total++;
+                state.jap++; state.total++;
             }
             if(state.jap >= 108) {
-                state.malas++;
-                state.jap = 0;
+                state.malas++; state.jap = 0;
                 new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3').play();
-                setTimeout(() => {
-                    document.querySelectorAll('.bead').forEach(b => b.classList.remove('filled'));
-                }, 500);
+                setTimeout(() => document.querySelectorAll('.bead').forEach(b => b.classList.remove('filled')), 500);
             }
-            updateStats();
-            if(navigator.vibrate) navigator.vibrate(30);
-        }
-
-        function updateStats() {
-            document.getElementById('disp-bead').innerText = `${state.jap} / 108`;
+            document.getElementById('disp-bead').innerText = state.jap + " / 108";
             document.getElementById('disp-mala').innerText = state.malas;
             document.getElementById('stat-m').innerText = state.malas;
             document.getElementById('stat-j').innerText = state.total;
         }
 
-        // --- GPT CORNER (FIXED REDIRECT) ---
+        // GPT Logic with HARD REDIRECT
         function askGPT() {
             const input = document.getElementById('gpt-input');
             const box = document.getElementById('chat-box');
             if(!input.value) return;
-
             const q = input.value.toLowerCase();
-            box.innerHTML += `<div class="bg-pink-100 p-3 rounded-2xl self-end ml-auto max-w-[80%] shadow-sm">${input.value}</div>`;
+            box.innerHTML += `<div class="bg-pink-100 p-3 rounded-xl self-end ml-auto max-w-[80%] mb-2">${input.value}</div>`;
             input.value = '';
 
             setTimeout(() => {
-                let ans = "राधे राधे! निरंतर नाम जप करें।";
+                let ans = "राधे राधे! महाराज जी का मार्गदर्शन प्राप्त करें।";
                 let vidId = "m-E6M97U5fA";
+                if(q.includes('focus') || q.includes('man')) vidId = "3NwZhYBZ_GE";
                 
-                if(q.includes('मन') || q.includes('focus')) {
-                    ans = "मन का काम भागना है, जीभ का काम जपना। जीभ न रुकने दें।";
-                    vidId = "3NwZhYBZ_GE";
-                }
-
-                box.innerHTML += `
-                    <div class="bg-white border p-4 rounded-2xl max-w-[90%] shadow-sm">
-                        <p class="mb-3 font-bold text-pink-800">${ans}</p>
-                        <a href="https://www.youtube.com/watch?v=${vidId}" target="_blank" rel="noopener noreferrer" class="block rounded-xl overflow-hidden border-2 border-orange-400">
-                            <img src="https://img.youtube.com/vi/${vidId}/mqdefault.jpg" class="w-full">
-                            <div class="p-2 bg-stone-900 text-white text-[10px] text-center font-bold uppercase tracking-widest">Watch on YouTube ▶</div>
-                        </a>
-                    </div>`;
+                // FIXED REDIRECTION VIA USER CLICK
+                const card = document.createElement('div');
+                card.className = "youtube-card";
+                card.innerHTML = `<p class="text-xs mb-1">${ans}</p><p class="font-bold">CLICK TO OPEN VIDEO ▶</p>`;
+                card.onclick = function() { window.open("https://www.youtube.com/watch?v=" + vidId, "_blank"); };
+                
+                box.appendChild(card);
                 box.scrollTop = box.scrollHeight;
             }, 600);
         }
 
-        // --- MOOD & CALENDAR ---
-        function updateMood(m) {
-            const quotes = { sad: "घबराइये मत, किशोरी जी सब देख रही हैं।", peace: "यह शांति ही राधा नाम का फल है।" };
-            document.getElementById('mood-quote').innerText = quotes[m];
+        function setMood(m) {
+            const q = { upset: "चिंता मत करो, किशोरी जी सब संभाल लेंगी।", peace: "यह शांति राधा नाम की कृपा है।" };
+            document.getElementById('mood-quote').innerText = q[m];
         }
 
         function renderCal() {
             const grid = document.getElementById('cal-grid');
             const head = document.getElementById('month-name');
-            const d = currentMonth;
-            head.innerText = d.toLocaleString('hi-IN', { month: 'long', year: 'numeric' });
-            
-            // Re-render days (keep the labels)
+            head.innerText = curMonth.toLocaleString('hi-IN', { month: 'long', year: 'numeric' });
             grid.innerHTML = '<span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span>';
-            const first = new Date(d.getFullYear(), d.getMonth(), 1).getDay();
-            const total = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
-
+            const first = new Date(curMonth.getFullYear(), curMonth.getMonth(), 1).getDay();
+            const days = new Date(curMonth.getFullYear(), curMonth.getMonth() + 1, 0).getDate();
             for(let i=0; i<first; i++) grid.innerHTML += '<div></div>';
-            for(let i=1; i<=total; i++) {
-                grid.innerHTML += `<div class="p-2 text-xs border border-stone-50 bg-white rounded">${i}</div>`;
-            }
+            for(let i=1; i<=days; i++) grid.innerHTML += `<div class="p-2 border border-stone-50 bg-white rounded text-[10px]">${i}</div>`;
         }
-        function moveCal(n) { currentMonth.setMonth(currentMonth.getMonth() + n); renderCal(); }
+        function moveCal(n) { curMonth.setMonth(curMonth.getMonth() + n); renderCal(); }
 
         window.onload = initMala;
     </script>
