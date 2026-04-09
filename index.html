@@ -3,264 +3,233 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shri Radha Kripa v5</title>
+    <title>Shri Radha Kripa Official</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --lotus: #C0396B; --cream: #FAF3E8; }
-        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; }
+        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; touch-action: none; }
 
-        /* Navigation Engine - Total Isolation */
-        .page { display: none; height: 100vh; width: 100%; position: absolute; top: 0; left: 0; background: var(--cream); overflow-y: auto; padding-top: 80px; padding-bottom: 100px; }
-        .page.active { display: block; z-index: 10; }
+        .screen { position: absolute; inset: 0; padding-top: 80px; padding-bottom: 100px; display: none; overflow-y: auto; background: var(--cream); }
+        .screen.active { display: block; z-index: 50; }
         
-        /* Mala SVG Styling */
-        .bead { fill: #E5E7EB; transition: fill 0.2s; }
-        .bead-active { fill: var(--lotus); filter: drop-shadow(0 0 3px var(--lotus)); }
-        .meru { fill: #E8A020; }
+        /* The Fixed Navigation stays above everything */
+        nav { z-index: 100; box-shadow: 0 -2px 10px rgba(0,0,0,0.05); }
 
-        /* UI Components */
-        .nav-active { color: var(--lotus) !important; font-weight: bold; border-top: 3px solid var(--lotus); }
-        .glass { background: white; border-radius: 20px; border: 1px solid rgba(192, 57, 107, 0.1); }
+        /* Bead Animation */
+        .bead { fill: #d1d5db; transition: fill 0.2s, r 0.2s; }
+        .bead.filled { fill: var(--lotus); r: 4; }
+        .bead.meru { fill: #E8A020; r: 6; }
 
-        /* Chat */
-        .chat-bubble { max-width: 85%; padding: 12px; border-radius: 15px; font-size: 0.9rem; line-height: 1.4; }
+        .btn-active { color: var(--lotus) !important; font-weight: bold; }
+        .glass { background: white; border-radius: 20px; border: 1px solid rgba(0,0,0,0.05); shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1); }
     </style>
 </head>
 <body>
 
-<div class="max-w-md mx-auto h-screen relative bg-white shadow-2xl overflow-hidden">
-    
-    <header class="fixed top-0 left-0 right-0 h-20 bg-white/90 backdrop-blur-md z-[100] border-b flex justify-between items-center px-6">
+    <header class="fixed top-0 inset-x-0 h-20 bg-white/90 backdrop-blur-md z-[110] border-b flex items-center justify-between px-6">
         <div>
-            <h1 class="text-xl font-bold text-pink-800 hindi">श्री राधा कृपा</h1>
-            <p class="text-[9px] uppercase tracking-widest opacity-40">Vrindavan Bliss</p>
+            <h1 class="text-xl font-bold text-pink-800">श्री राधा कृपा</h1>
+            <p class="text-[9px] uppercase tracking-widest opacity-40">Official Ecosystem</p>
         </div>
         <div class="text-2xl">🌸</div>
     </header>
 
-    <main id="app-container">
-
-        <section id="view-home" class="page active px-6">
+    <main id="app-shell">
+        
+        <section id="home" class="screen active px-6">
             <div class="glass p-6 mt-4 text-center">
-                <p class="text-[10px] uppercase opacity-40 mb-2">Today's Vani</p>
-                <h2 id="mood-text" class="text-lg italic text-pink-900">"नाम जप ही सबसे बड़ी सेवा है।"</h2>
+                <p class="text-[10px] uppercase opacity-40 mb-2">Mood Vani</p>
+                <h2 id="mood-text" class="text-lg italic text-pink-900">"राधा नाम का आश्रय ही परम सुख है।"</h2>
             </div>
 
             <div class="grid grid-cols-2 gap-4 mt-6">
-                <div class="glass p-4 text-center">
-                    <p class="text-[10px] opacity-50 uppercase">Malas</p>
-                    <p id="h-mala" class="text-2xl font-bold">0</p>
-                </div>
-                <div class="glass p-4 text-center">
-                    <p class="text-[10px] opacity-50 uppercase">Total</p>
-                    <p id="h-total" class="text-2xl font-bold">0</p>
-                </div>
+                <button onclick="setMood('upset')" class="glass p-3 text-sm">Disturbed 🌪️</button>
+                <button onclick="setMood('peace')" class="glass p-3 text-sm">Peaceful 🧘</button>
             </div>
 
-            <h3 class="font-bold mt-8 mb-4">How is your mood?</h3>
-            <div class="grid grid-cols-2 gap-2">
-                <button onclick="changeMood('sad')" class="glass p-3 text-sm">Disturbed 🌪️</button>
-                <button onclick="changeMood('peace')" class="glass p-3 text-sm">Peaceful 🧘</button>
-                <button onclick="changeMood('happy')" class="glass p-3 text-sm">Devotional 🌸</button>
-                <button onclick="changeMood('lost')" class="glass p-3 text-sm">Lost 🌀</button>
+            <div class="mt-8 glass p-6">
+                <h3 class="font-bold mb-2">Sewa Stats</h3>
+                <div class="flex justify-between border-b pb-2"><span>Total Malas</span><span id="stat-m" class="font-bold">0</span></div>
+                <div class="flex justify-between pt-2"><span>Lifetime Japs</span><span id="stat-j" class="font-bold">0</span></div>
             </div>
         </section>
 
-        <section id="view-jap" class="page flex flex-col items-center">
+        <section id="jap" class="screen flex flex-col items-center">
             <div class="mt-4 text-center">
-                <h2 id="m-count" class="text-4xl font-bold text-pink-800">0</h2>
-                <p class="text-[10px] uppercase opacity-40">Total Malas</p>
+                <h2 id="display-m" class="text-4xl font-bold text-pink-800">0</h2>
+                <p class="text-[10px] uppercase opacity-40">Completed Malas</p>
             </div>
 
-            <div class="relative w-80 h-80 mt-10 flex items-center justify-center">
-                <svg id="mala-svg" viewBox="0 0 200 200" class="absolute inset-0 w-full h-full rotate-[-90deg]">
+            <div class="relative w-80 h-80 mt-10">
+                <svg id="mala-svg" viewBox="0 0 200 200" class="w-full h-full -rotate-90">
                     </svg>
-                
-                <button onclick="handleBeadClick()" class="z-20 w-44 h-44 rounded-full bg-gradient-to-br from-pink-600 to-pink-800 shadow-2xl flex flex-col items-center justify-center text-white border-4 border-white active:scale-95 transition">
-                    <span class="hindi text-4xl mb-1">राधे</span>
-                    <span id="b-count" class="text-xl opacity-60">0 / 108</span>
-                </button>
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <button onclick="incrementBead()" class="w-40 h-40 rounded-full bg-gradient-to-br from-pink-600 to-pink-800 shadow-2xl flex flex-col items-center justify-center text-white border-4 border-white active:scale-95 transition-transform z-50">
+                        <span class="text-4xl font-bold">राधे</span>
+                        <span id="display-b" class="text-sm opacity-60">0 / 108</span>
+                    </button>
+                </div>
             </div>
-            <p class="mt-8 text-xs text-stone-400">Tap the center to move the beads</p>
         </section>
 
-        <section id="view-gpt" class="page flex flex-col">
-            <div id="chat-logs" class="flex-1 p-5 space-y-4 overflow-y-auto">
-                <div class="chat-bubble bg-white border shadow-sm">राधे राधे! मन में कोई शंका हो या जप में मन न लग रहा हो, तो महाराज जी से पूछें।</div>
+        <section id="guidance" class="screen flex flex-col">
+            <div id="chat-box" class="flex-1 p-5 space-y-4 overflow-y-auto">
+                <div class="bg-white border p-4 rounded-xl text-sm">राधे राधे! मन की शंका का समाधान महाराज जी के वचनों से प्राप्त करें।</div>
             </div>
             <div class="p-4 bg-white border-t flex gap-2">
-                <input type="text" id="gpt-input" placeholder="Ask Maharaj Ji..." class="flex-1 p-3 bg-stone-100 rounded-xl outline-none text-sm">
-                <button onclick="handleGPT()" class="bg-orange-600 text-white px-6 rounded-xl font-bold">Ask</button>
+                <input type="text" id="gpt-input" placeholder="मन विचलित है..." class="flex-1 p-3 bg-stone-100 rounded-xl outline-none text-sm">
+                <button onclick="askGPT()" class="bg-pink-700 text-white px-6 rounded-xl font-bold">पूछें</button>
             </div>
         </section>
 
-        <section id="view-cal" class="page px-6">
+        <section id="calendar" class="screen px-6">
             <div class="flex justify-between items-center mb-6">
-                <h2 id="cal-month" class="text-xl font-bold">Month</h2>
-                <div class="flex gap-4">
-                    <button onclick="updateMonth(-1)">◀</button>
-                    <button onclick="updateMonth(1)">▶</button>
+                <h2 id="cal-month-name" class="text-xl font-bold">Month</h2>
+                <div class="flex gap-4"><button onclick="moveMonth(-1)">◀</button><button onclick="moveMonth(1)">▶</button></div>
+            </div>
+            <div id="cal-grid" class="grid grid-cols-7 gap-1 text-center">
                 </div>
-            </div>
-            <div class="grid grid-cols-7 text-center text-[10px] font-bold opacity-30 mb-2">
-                <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
-            </div>
-            <div id="cal-grid" class="grid grid-cols-7 gap-1"></div>
         </section>
 
-        <section id="view-lib" class="page px-6">
-            <h2 class="text-xl font-bold mb-6">Library</h2>
+        <section id="hub" class="screen px-6">
+            <h2 class="text-xl font-bold mb-6">Bhakti Links</h2>
             <div class="space-y-4">
-                <div onclick="window.open('https://www.youtube.com/@BhajanMarg', '_blank')" class="glass p-4 flex items-center gap-4 cursor-pointer">
-                    <span class="text-2xl">📺</span>
-                    <span class="font-bold text-sm">YouTube: Bhajan Marg</span>
-                </div>
-                <div onclick="window.open('http://googleusercontent.com/spotify.com/5', '_blank')" class="glass p-4 flex items-center gap-4 cursor-pointer">
-                    <span class="text-2xl">🎧</span>
-                    <span class="font-bold text-sm">Spotify: Vrindavan Kirtan</span>
-                </div>
+                <button onclick="window.open('https://www.youtube.com/@BhajanMarg', '_blank')" class="w-full glass p-5 flex items-center gap-4">📺 YouTube: Bhajan Marg</button>
+                <button onclick="window.open('https://open.spotify.com/', '_blank')" class="w-full glass p-5 flex items-center gap-4">🎧 Spotify Kirtan</button>
             </div>
         </section>
+
     </main>
 
-    <nav class="fixed bottom-0 left-0 right-0 h-20 bg-white border-t z-[100] flex justify-around items-center px-4">
-        <button onclick="navTo('home')" class="nav-btn flex flex-col items-center flex-1 text-stone-400 nav-active" id="btn-home">
-            <span class="text-xl">🏠</span><span class="text-[8px] uppercase font-bold mt-1">Home</span>
-        </button>
-        <button onclick="navTo('jap')" class="nav-btn flex flex-col items-center flex-1 text-stone-400" id="btn-jap">
-            <span class="text-xl">📿</span><span class="text-[8px] uppercase font-bold mt-1">Jap</span>
-        </button>
-        <button onclick="navTo('gpt')" class="nav-btn flex flex-col items-center flex-1 text-stone-400" id="btn-gpt">
-            <span class="text-xl">🙏</span><span class="text-[8px] uppercase font-bold mt-1">Guidance</span>
-        </button>
-        <button onclick="navTo('cal')" class="nav-btn flex flex-col items-center flex-1 text-stone-400" id="btn-cal">
-            <span class="text-xl">📅</span><span class="text-[8px] uppercase font-bold mt-1">Cal</span>
-        </button>
-        <button onclick="navTo('lib')" class="nav-btn flex flex-col items-center flex-1 text-stone-400" id="btn-lib">
-            <span class="text-xl">📚</span><span class="text-[8px] uppercase font-bold mt-1">Lib</span>
-        </button>
+    <nav class="fixed bottom-0 inset-x-0 h-20 bg-white border-t flex items-center justify-around px-2">
+        <button onclick="nav('home')" id="nav-home" class="flex flex-col items-center flex-1 text-stone-400 btn-active"><span class="text-xl">🏠</span><span class="text-[9px] uppercase font-bold mt-1">Home</span></button>
+        <button onclick="nav('jap')" id="nav-jap" class="flex flex-col items-center flex-1 text-stone-400"><span class="text-xl">📿</span><span class="text-[9px] uppercase font-bold mt-1">Naam Jap</span></button>
+        <button onclick="nav('guidance')" id="nav-guidance" class="flex flex-col items-center flex-1 text-stone-400"><span class="text-xl">🙏</span><span class="text-[9px] uppercase font-bold mt-1">GPT</span></button>
+        <button onclick="nav('calendar')" id="nav-calendar" class="flex flex-col items-center flex-1 text-stone-400"><span class="text-xl">📅</span><span class="text-[9px] uppercase font-bold mt-1">Calendar</span></button>
+        <button onclick="nav('hub')" id="nav-hub" class="flex flex-col items-center flex-1 text-stone-400"><span class="text-xl">📚</span><span class="text-[9px] uppercase font-bold mt-1">Library</span></button>
     </nav>
-</div>
 
-<script>
-    // --- STATE ---
-    let beads = 0, malas = 0, total = 0;
-    let currDate = new Date();
+    <script>
+        // GLOBAL STATE
+        let state = { jap: 0, malas: 0, total: 0 };
+        let currentMonth = new Date();
 
-    // --- NAVIGATION (FIXED) ---
-    function navTo(id) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.getElementById('view-' + id).classList.add('active');
-        
-        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('nav-active'));
-        document.getElementById('btn-' + id).classList.add('nav-active');
-
-        if(id === 'cal') drawCal();
-    }
-
-    // --- MALA GENERATOR ---
-    function initMala() {
-        const svg = document.getElementById('mala-svg');
-        for (let i = 0; i < 108; i++) {
-            const angle = (i / 108) * Math.PI * 2;
-            const x = 100 + 85 * Math.cos(angle);
-            const y = 100 + 85 * Math.sin(angle);
-            const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            circle.setAttribute("cx", x);
-            circle.setAttribute("cy", y);
-            circle.setAttribute("r", i === 0 ? "4" : "2.5");
-            circle.setAttribute("class", i === 0 ? "bead meru" : "bead");
-            circle.setAttribute("id", "bead-" + i);
-            svg.appendChild(circle);
-        }
-    }
-
-    function handleBeadClick() {
-        if(beads < 108) {
-            document.getElementById('bead-' + beads).classList.add('bead-active');
-            beads++;
-            total++;
-        }
-        if(beads >= 108) {
-            malas++;
-            beads = 0;
-            new Audio('https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3').play();
-            // Reset beads
-            setTimeout(() => {
-                document.querySelectorAll('.bead').forEach(b => b.classList.remove('bead-active'));
-            }, 500);
-        }
-        document.getElementById('b-count').innerText = beads + " / 108";
-        document.getElementById('m-count').innerText = malas;
-        document.getElementById('h-mala').innerText = malas;
-        document.getElementById('h-total').innerText = total;
-        if(navigator.vibrate) navigator.vibrate(25);
-    }
-
-    // --- MOOD ---
-    const vanis = {
-        sad: "घबराइये मत, श्री राधा नाम सब संकट हर लेगा।",
-        peace: "यह शांति राधा रानी की कृपा है।",
-        happy: "इस आनंद को नाम जप में लगाइये।",
-        lost: "जब कुछ समझ न आये, तो केवल 'राधा-राधा' कहें।"
-    };
-    function changeMood(m) { document.getElementById('mood-text').innerText = vanis[m]; }
-
-    // --- GPT (FIXED VIDEO REDIRECT) ---
-    function handleGPT() {
-        const input = document.getElementById('gpt-input');
-        const logs = document.getElementById('chat-logs');
-        if(!input.value) return;
-
-        logs.innerHTML += `<div class="chat-bubble bg-pink-700 text-white self-end ml-auto">${input.value}</div>`;
-        const q = input.value.toLowerCase();
-        input.value = "";
-
-        setTimeout(() => {
-            let res = "राधे राधे! महाराज जी कहते हैं निरंतर नाम जप करें।";
-            let vidId = "m-E6M97U5fA";
+        // 1. NAVIGATION SYSTEM (The Expert Fix)
+        function nav(targetId) {
+            // Hide all sections strictly
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            // Remove active classes from all nav buttons
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('btn-active'));
             
-            if(q.includes("focus") || q.includes("man")) {
-                res = "मन भागे तो भागने दें, जीभ को 'राधा' नाम में लगाए रखें।";
-                vidId = "3NwZhYBZ_GE";
-            } else if(q.includes("gussa") || q.includes("anger")) {
-                res = "क्रोध आये तो तुरंत उस स्थान से हट जाएं और नाम जप करें।";
-                vidId = "E7WAnwEshvM";
-            }
+            // Activate the chosen one
+            document.getElementById(targetId).classList.add('active');
+            document.getElementById('nav-' + targetId).classList.add('btn-active');
 
-            logs.innerHTML += `
-                <div class="chat-bubble bg-white border">
-                    <p class="mb-3">${res}</p>
-                    <div class="rounded-lg overflow-hidden border cursor-pointer" onclick="window.open('https://www.youtube.com/watch?v=${vidId}', '_blank')">
-                        <img src="https://img.youtube.com/vi/${vidId}/mqdefault.jpg" class="w-full">
-                        <div class="p-2 bg-stone-900 text-white text-[10px] text-center font-bold tracking-widest uppercase">Watch Video Guidance ▶</div>
-                    </div>
-                </div>`;
-            logs.scrollTop = logs.scrollHeight;
-        }, 600);
-    }
-
-    // --- CALENDAR ---
-    function drawCal() {
-        const grid = document.getElementById('cal-grid');
-        const title = document.getElementById('cal-month');
-        grid.innerHTML = "";
-        title.innerText = currDate.toLocaleString('default', { month: 'long', year: 'numeric' });
-
-        const first = new Date(currDate.getFullYear(), currDate.getMonth(), 1).getDay();
-        const days = new Date(currDate.getFullYear(), currDate.getMonth() + 1, 0).getDate();
-
-        for(let i=0; i<first; i++) grid.innerHTML += '<div></div>';
-        for(let i=1; i<=days; i++) {
-            const isToday = (i === new Date().getDate() && currDate.getMonth() === new Date().getMonth()) ? 'bg-pink-700 text-white font-bold' : '';
-            grid.innerHTML += `<div class="aspect-square flex items-center justify-center text-xs rounded-lg ${isToday}">${i}</div>`;
+            if(targetId === 'calendar') renderCalendar();
         }
-    }
-    function updateMonth(n) { currDate.setMonth(currDate.getMonth() + n); drawCal(); }
 
-    // INIT
-    initMala();
-</script>
+        // 2. SVG MALA GENERATION (Namespace Fix)
+        const SVG_NS = "http://www.w3.org/2000/svg";
+        function buildMala() {
+            const svg = document.getElementById('mala-svg');
+            svg.innerHTML = ''; 
+            for (let i = 0; i < 108; i++) {
+                const angle = (i / 108) * Math.PI * 2;
+                const x = 100 + 85 * Math.cos(angle);
+                const y = 100 + 85 * Math.sin(angle);
+                const circle = document.createElementNS(SVG_NS, "circle");
+                circle.setAttribute("cx", x);
+                circle.setAttribute("cy", y);
+                circle.setAttribute("r", i === 0 ? "5" : "3");
+                circle.setAttribute("class", i === 0 ? "bead meru" : "bead");
+                circle.setAttribute("id", `bead-${i}`);
+                svg.appendChild(circle);
+            }
+        }
+
+        function incrementBead() {
+            if (state.jap < 108) {
+                const bead = document.getElementById(`bead-${state.jap}`);
+                if(bead) bead.classList.add('filled');
+                state.jap++;
+                state.total++;
+            }
+            if (state.jap === 108) {
+                state.malas++;
+                state.jap = 0;
+                // Vibrate and Audio
+                if(navigator.vibrate) navigator.vibrate(100);
+                setTimeout(() => {
+                    document.querySelectorAll('.bead').forEach(b => b.classList.remove('filled'));
+                }, 500);
+            }
+            updateDisplays();
+        }
+
+        function updateDisplays() {
+            document.getElementById('display-b').innerText = `${state.jap} / 108`;
+            document.getElementById('display-m').innerText = state.malas;
+            document.getElementById('stat-m').innerText = state.malas;
+            document.getElementById('stat-j').innerText = state.total;
+        }
+
+        // 3. GPT & VIDEO (Reliable Redirection)
+        function askGPT() {
+            const input = document.getElementById('gpt-input');
+            const box = document.getElementById('chat-box');
+            if(!input.value) return;
+
+            const text = input.value.toLowerCase();
+            box.innerHTML += `<div class="bg-pink-100 p-3 rounded-xl self-end ml-auto max-w-[80%]">${input.value}</div>`;
+            input.value = '';
+
+            setTimeout(() => {
+                let reply = "राधे राधे! निरंतर नाम जप करें।";
+                let vid = "m-E6M97U5fA"; // Default official
+
+                if(text.includes('मन') || text.includes('focus')) {
+                    reply = "मन का स्वभाव है भागना। आप जीभ से नाम जप करते रहें।";
+                    vid = "3NwZhYBZ_GE";
+                }
+
+                box.innerHTML += `
+                    <div class="bg-white border p-3 rounded-xl max-w-[85%]">
+                        <p class="mb-2 font-bold">${reply}</p>
+                        <div class="rounded-lg overflow-hidden border cursor-pointer" onclick="window.open('https://www.youtube.com/watch?v=${vid}', '_blank')">
+                            <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" class="w-full">
+                            <div class="p-2 bg-stone-900 text-white text-[10px] text-center uppercase">सत्संग देखें ▶</div>
+                        </div>
+                    </div>`;
+                box.scrollTop = box.scrollHeight;
+            }, 600);
+        }
+
+        // 4. MOOD
+        const moodMap = { upset: "घबराइये मत, किशोरी जी सब देख रही हैं।", peace: "यह शांति राधा रानी की कृपा है।" };
+        function setMood(m) { document.getElementById('mood-text').innerText = moodMap[m]; }
+
+        // 5. CALENDAR
+        function renderCalendar() {
+            const grid = document.getElementById('cal-grid');
+            const name = document.getElementById('cal-month-name');
+            grid.innerHTML = "<b>S</b><b>M</b><b>T</b><b>W</b><b>T</b><b>F</b><b>S</b>";
+            name.innerText = currentMonth.toLocaleString('hi-IN', { month: 'long', year: 'numeric' });
+            
+            const first = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1).getDay();
+            const days = new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate();
+
+            for(let i=0; i<first; i++) grid.innerHTML += '<div></div>';
+            for(let i=1; i<=days; i++) {
+                grid.innerHTML += `<div class="p-2 text-xs border border-stone-50">${i}</div>`;
+            }
+        }
+        function moveMonth(n) { currentMonth.setMonth(currentMonth.getMonth() + n); renderCalendar(); }
+
+        // BOOT
+        window.onload = () => {
+            buildMala();
+        }
+    </script>
 </body>
 </html>
