@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shri Radha Naam Jap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,600;1,600&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #FAF3E8; /* Parchment Cream */
+            font-family: 'Cormorant Garamond', serif;
+            color: #C0396B; /* Lotus Pink */
+            overflow: hidden;
+            touch-action: manipulation;
+        }
+        .hindi { font-family: 'Noto Serif Devanagari', serif; }
+        
+        .mala-bead {
+            background: radial-gradient(circle at 30% 30%, #E8A020, #C0396B);
+            box-shadow: 0 10px 25px rgba(192, 57, 107, 0.3);
+            transition: transform 0.1s active;
+        }
+        .mala-bead:active { transform: scale(0.95); }
+
+        .progress-ring {
+            transition: stroke-dashoffset 0.35s;
+            transform: rotate(-90deg);
+            transform-origin: 50% 50%;
+        }
+
+        .lotus-glow {
+            filter: drop-shadow(0 0 15px rgba(232, 160, 32, 0.5));
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 0.8; }
+            50% { transform: scale(1.05); opacity: 1; }
+            100% { transform: scale(1); opacity: 0.8; }
+        }
+        .aura { animation: pulse 4s infinite ease-in-out; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-between h-screen p-6">
+
+    <header class="text-center mt-4">
+        <div class="aura text-4xl mb-2">🌸</div>
+        <h1 class="hindi text-3xl font-bold tracking-wide">श्री राधा</h1>
+        <p class="italic text-sm opacity-70">Jai Shri Radhe</p>
+    </header>
+
+    <main class="relative flex items-center justify-center">
+        <svg class="w-72 h-72">
+            <circle class="text-stone-200 stroke-current" stroke-width="4" fill="transparent" r="130" cx="144" cy="144"/>
+            <circle id="progress" class="text-orange-400 stroke-current progress-ring" stroke-width="6" stroke-linecap="round" fill="transparent" r="130" cx="144" cy="144" stroke-dasharray="816.8" stroke-dashoffset="816.8"/>
+        </svg>
+
+        <button onclick="handleTap()" class="absolute w-48 h-48 rounded-full mala-bead flex flex-col items-center justify-center text-white focus:outline-none">
+            <span id="current-naam" class="hindi text-3xl mb-1">राधे राधे</span>
+            <span id="bead-count" class="text-4xl font-bold">0</span>
+        </button>
+    </main>
+
+    <section class="text-center w-full max-w-xs">
+        <div class="bg-white/50 backdrop-blur-sm rounded-2xl p-4 border border-pink-100 mb-6">
+            <div class="flex justify-around mb-2">
+                <div>
+                    <p class="text-xs uppercase tracking-widest opacity-60">Malas</p>
+                    <p id="mala-count" class="text-xl font-bold">0</p>
+                </div>
+                <div class="border-x border-pink-100 px-6">
+                    <p class="text-xs uppercase tracking-widest opacity-60">Total</p>
+                    <p id="total-count" class="text-xl font-bold">0</p>
+                </div>
+            </div>
+            <p class="text-sm italic mt-2 text-orange-700">"Sankalp: For Inner Peace"</p>
+        </div>
+
+        <nav class="flex justify-between items-center bg-stone-800 text-stone-200 px-8 py-4 rounded-full w-full">
+            <div class="opacity-50 hover:opacity-100 cursor-pointer">📜</div>
+            <div class="text-2xl text-orange-300">📿</div>
+            <div class="opacity-50 hover:opacity-100 cursor-pointer">🎶</div>
+            <div class="opacity-50 hover:opacity-100 cursor-pointer">⚙️</div>
+        </nav>
+    </section>
+
+    <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+
+    <script>
+        let count = 0;
+        let malas = 0;
+        let total = 0;
+        const maxBeads = 108;
+        const circle = document.getElementById('progress');
+        const circumference = 130 * 2 * Math.PI;
+
+        function handleTap() {
+            count++;
+            total++;
+            
+            // Haptic Feedback (for mobile)
+            if (window.navigator.vibrate) window.navigator.vibrate(20);
+
+            if (count > maxBeads) {
+                count = 1;
+                malas++;
+                document.getElementById('bell').play();
+            }
+
+            updateUI();
+        }
+
+        function updateUI() {
+            document.getElementById('bead-count').innerText = count;
+            document.getElementById('mala-count').innerText = malas;
+            document.getElementById('total-count').innerText = total;
+
+            const offset = circumference - (count / maxBeads) * circumference;
+            circle.style.strokeDashoffset = offset;
+
+            // Visual feedback on total
+            if(count === 108) {
+                document.body.style.backgroundColor = "#FFF9ED";
+                setTimeout(() => document.body.style.backgroundColor = "#FAF3E8", 200);
+            }
+        }
+    </script>
+</body>
+</html>
