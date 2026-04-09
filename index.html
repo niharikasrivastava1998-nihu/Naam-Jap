@@ -3,265 +3,336 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shri Radha Rani - Core Devotional App</title>
+    <title>Shri Radha Kripa</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Serif+Devanagari:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --lotus-pink: #C0396B;
+            --lotus: #C0396B;
             --saffron: #E8A020;
-            --parchment: #FAF3E8;
-            --yamuna-blue: #0D1A2E;
+            --cream: #FAF3E8;
+            --deep-braj: #4A0E0E;
         }
 
         body {
-            background-color: var(--parchment);
-            font-family: 'Cormorant Garamond', serif;
-            color: var(--lotus-pink);
-            height: 100vh;
+            background-color: var(--cream);
+            font-family: 'Noto Serif Devanagari', serif;
             overflow: hidden;
+            color: var(--deep-braj);
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .hindi { font-family: 'Noto Serif Devanagari', serif; }
-
-        /* Mala Bead Styling */
-        .bead {
+        /* Animated Background Elements */
+        .petal {
             position: absolute;
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #fcd34d, #b45309);
-            transition: all 0.3s ease;
+            pointer-events: none;
+            opacity: 0.6;
+            animation: fall 10s linear infinite;
         }
 
-        .bead.active {
-            background: radial-gradient(circle at 30% 30%, #f472b6, #C0396B);
-            transform: scale(1.5);
-            box-shadow: 0 0 10px rgba(192, 57, 107, 0.8);
+        @keyframes fall {
+            0% { transform: translateY(-10vh) rotate(0deg); }
+            100% { transform: translateY(110vh) rotate(360deg); }
         }
 
-        /* Glassmorphism */
-        .glass-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(192, 57, 107, 0.1);
+        /* Mobile Container */
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 500px;
+            margin: 0 auto;
+            position: relative;
+            background: linear-gradient(to bottom, #ffffff, var(--cream));
         }
 
-        .tab-content { display: none; height: calc(100vh - 160px); overflow-y: auto; }
-        .tab-content.active { display: block; }
-
-        @keyframes rotateMala {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
+        /* Section Transition */
+        .section {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 100px; /* Space for nav */
+            animation: fadeIn 0.4s ease-out;
         }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Interactive Mala */
+        #mala-canvas {
+            width: 280px;
+            height: 280px;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));
+        }
+
+        .jap-btn {
+            background: radial-gradient(circle, var(--lotus), #901e4a);
+            box-shadow: 0 8px 32px rgba(192, 57, 107, 0.4);
+            transition: transform 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .jap-btn:active { transform: scale(0.92); }
+
+        /* Custom Scrollbar */
+        .section::-webkit-scrollbar { width: 4px; }
+        .section::-webkit-scrollbar-thumb { background: var(--lotus); border-radius: 10px; }
+
+        /* GPT Corner Chat Bubble */
+        .bubble-bot { background: white; border-radius: 20px 20px 20px 5px; border: 1px solid #fce7f3; }
+        .bubble-user { background: var(--lotus); color: white; border-radius: 20px 20px 5px 20px; align-self: flex-end; }
         
-        .meru-bead {
-            background: #E8A020 !important;
-            width: 14px !important;
-            height: 14px !important;
-            border: 2px solid white;
-        }
+        /* Navigation Styling */
+        .nav-item.active { color: var(--lotus); transform: translateY(-5px); }
+        .nav-item.active .icon-circle { background: #fce7f3; }
     </style>
 </head>
-<body class="flex flex-col">
+<body>
 
-    <header class="p-4 text-center border-b border-pink-100 bg-white/50">
-        <h1 class="hindi text-2xl font-bold">।। श्री राधा ।।</h1>
-        <p class="text-xs uppercase tracking-widest opacity-70">Vrindavan Dham Presence</p>
-    </header>
-
-    <main class="flex-grow p-4">
+    <div class="app-container">
         
-        <div id="jap" class="tab-content active flex flex-col items-center justify-center">
-            <div id="mala-container" class="relative w-72 h-72 flex items-center justify-center mb-8">
-                <div id="beads-wrapper" class="absolute w-full h-full"></div>
-                
-                <button onclick="handleJapTap()" class="z-10 w-44 h-44 rounded-full shadow-2xl flex flex-col items-center justify-center bg-white border-4 border-pink-600 active:scale-95 transition-transform">
-                    <span class="hindi text-3xl text-pink-700">राधे राधे</span>
-                    <span id="counter" class="text-5xl font-bold mt-1">0</span>
-                </button>
+        <header class="flex justify-between items-center p-5 pt-8 bg-white/30 backdrop-blur-md z-20">
+            <div>
+                <h1 class="text-xl font-bold text-pink-800">श्री राधा कृपा</h1>
+                <p class="text-[10px] uppercase tracking-tighter opacity-60">Vrindavan Bliss Ecosystem</p>
+            </div>
+            <div class="w-10 h-10 rounded-full border-2 border-pink-200 flex items-center justify-center bg-white shadow-sm">
+                <span class="text-lg">🌸</span>
+            </div>
+        </header>
+
+        <div id="section-jap" class="section active">
+            <div class="flex flex-col items-center">
+                <div class="relative flex items-center justify-center my-8">
+                    <canvas id="mala-canvas"></canvas>
+                    <button onclick="triggerJap()" class="absolute w-44 h-44 rounded-full jap-btn flex flex-col items-center justify-center text-white border-4 border-white/20">
+                        <span class="hindi text-3xl mb-1 tracking-wider">राधे</span>
+                        <div class="h-[1px] w-12 bg-white/30 my-2"></div>
+                        <span id="bead-num" class="text-4xl font-bold">0</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 w-full px-4">
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-pink-50 text-center">
+                        <p class="text-[10px] uppercase opacity-50 font-bold mb-1">माला संख्या</p>
+                        <p id="stat-mala" class="text-2xl font-bold text-pink-700">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-3xl shadow-sm border border-pink-50 text-center">
+                        <p class="text-[10px] uppercase opacity-50 font-bold mb-1">कुल जाप</p>
+                        <p id="stat-total" class="text-2xl font-bold text-pink-700">0</p>
+                    </div>
+                </div>
+
+                <div class="mt-8 p-4 bg-orange-50/50 rounded-2xl border border-orange-100 text-center mx-4">
+                    <p class="text-xs italic text-orange-800">"Naam Jap is the highest form of service to Shri Priya Ji."</p>
+                </div>
+            </div>
+        </div>
+
+        <div id="section-gpt" class="section">
+            <div class="bg-gradient-to-r from-orange-500 to-amber-600 p-5 rounded-3xl text-white shadow-lg mb-6">
+                <h2 class="text-xl font-bold">प्रेमानंद जी मार्गदर्शन</h2>
+                <p class="text-xs opacity-90">Get solutions to your spiritual hurdles via Satsang videos.</p>
             </div>
             
-            <div class="flex gap-4 w-full">
-                <div class="glass-card flex-1 p-3 rounded-xl text-center">
-                    <p class="text-xs opacity-60">Malas</p>
-                    <p id="mala-count" class="text-xl font-bold text-amber-600">0</p>
+            <div id="chat-box" class="flex flex-col space-y-4 mb-4 min-h-[300px]">
+                <div class="bubble-bot p-4 shadow-sm max-w-[85%]">
+                    <p class="text-sm">राधे राधे। आपको भक्ति मार्ग में क्या बाधा आ रही है? अपना प्रश्न नीचे लिखें।</p>
                 </div>
-                <div class="glass-card flex-1 p-3 rounded-xl text-center">
-                    <p class="text-xs opacity-60">Total Japs</p>
-                    <p id="total-count" class="text-xl font-bold text-amber-600">0</p>
-                </div>
+            </div>
+
+            <div class="sticky bottom-2 flex gap-2 bg-white p-2 rounded-2xl shadow-xl border border-pink-100">
+                <input type="text" id="gpt-input" placeholder="Ask Maharaj Ji..." class="flex-1 bg-transparent p-3 outline-none text-sm">
+                <button onclick="askMaharajJi()" class="bg-orange-600 text-white px-6 rounded-xl font-bold active:scale-95 transition-transform">पूछें</button>
             </div>
         </div>
 
-        <div id="aarti" class="tab-content p-2">
-            <h2 class="hindi text-2xl font-bold mb-4 border-b pb-2">श्री राधा रानी आरती</h2>
-            <div class="glass-card p-4 rounded-xl mb-6 leading-loose text-lg">
-                <p class="hindi">आरती श्री वृषभानुसुता की।<br>मंजुल मूर्ति मोहन ममता की॥</p>
-                <p class="hindi mt-2">विमल विवेक विराग विकासिनी।<br>पावन प्रभु पद प्रीति प्रकाशिनी॥</p>
-                <p class="hindi mt-2">सुन्दरता की सीमा सुकुमारी।<br>वृंदावन की शोभा अति न्यारी॥</p>
-            </div>
-
-            <h2 class="hindi text-2xl font-bold mb-4 border-b pb-2">सिद्ध मंत्र</h2>
-            <div class="glass-card p-4 rounded-xl italic">
-                <p class="text-pink-800 font-bold mb-2">Maha Mantra:</p>
-                <p class="hindi text-xl">हरे कृष्ण हरे कृष्ण कृष्ण कृष्ण हरे हरे।<br>हरे राम हरे राम राम राम हरे हरे॥</p>
-            </div>
-        </div>
-
-        <div id="gpt" class="tab-content">
-            <div class="bg-orange-600 text-white p-4 rounded-t-xl">
-                <h2 class="hindi text-xl font-bold italic">महाराज जी मार्गदर्शन (GPT Corner)</h2>
-                <p class="text-xs">Ask questions about Bhakti, Naam Jap, or Life</p>
-            </div>
-            <div class="glass-card p-4 rounded-b-xl shadow-inner min-h-[300px]">
-                <div id="chat-history" class="h-48 overflow-y-auto mb-4 text-sm space-y-3">
-                    <p class="bg-orange-100 p-2 rounded"><b>System:</b> राधे राधे। महाराज जी के सत्संग से उत्तर प्राप्त करने के लिए प्रश्न पूछें।</p>
-                </div>
-                <div class="flex flex-col gap-2">
-                    <input type="text" id="userInput" placeholder="I can't focus on Naam Jap..." class="w-full p-3 rounded-lg border-2 border-orange-200 focus:outline-none focus:border-orange-500">
-                    <button onclick="askGPT()" class="bg-orange-600 text-white py-3 rounded-lg font-bold">Ask Premanand Ji</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="links" class="tab-content">
-            <h2 class="hindi text-2xl font-bold mb-6">Connect with Vrindavan</h2>
-            <div class="grid grid-cols-1 gap-4">
-                <a href="https://www.youtube.com/@BhajanMarg" target="_blank" class="flex items-center p-4 bg-red-50 rounded-xl border border-red-200 shadow-sm">
-                    <span class="text-3xl mr-4">📺</span>
-                    <div>
-                        <p class="font-bold text-red-700">Bhajan Marg (YouTube)</p>
-                        <p class="text-xs text-red-600">Daily Satsang & Guidance</p>
+        <div id="section-hub" class="section">
+            <h3 class="text-lg font-bold mb-6 flex items-center">
+                <span class="mr-2">🕉️</span> आध्यात्मिक केंद्र
+            </h3>
+            
+            <div class="space-y-4">
+                <a href="https://www.youtube.com/@BhajanMarg" class="flex items-center p-4 bg-white rounded-3xl border border-pink-50 shadow-sm">
+                    <div class="w-12 h-12 bg-red-100 rounded-2xl flex items-center justify-center mr-4">🎬</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm">Bhajan Marg Official</h4>
+                        <p class="text-[10px] opacity-60">Watch Daily Satsang on YouTube</p>
                     </div>
+                    <span class="text-gray-300">→</span>
                 </a>
-                <a href="https://open.spotify.com/search/premanand%20ji" target="_blank" class="flex items-center p-4 bg-green-50 rounded-xl border border-green-200 shadow-sm">
-                    <span class="text-3xl mr-4">🎧</span>
-                    <div>
-                        <p class="font-bold text-green-700">Spotify Discourses</p>
-                        <p class="text-xs text-green-600">Listen while you travel</p>
+
+                <div class="p-6 bg-gradient-to-br from-pink-600 to-pink-800 rounded-[2rem] text-white my-8">
+                    <h4 class="hindi text-2xl mb-2">श्री राधा अष्टकम</h4>
+                    <p class="text-[10px] mb-4 opacity-80 italic">The Eight Verses in Praise of Shri Radha</p>
+                    <div class="text-sm leading-relaxed border-t border-white/20 pt-4">
+                        उपास्यमान-पाद-पद्म-पुञ्ज-भक्ति-नर्मदं,<br>
+                        नत-प्रभूत-नन्दनन्दन-प्रबद्ध-मानसम्...
                     </div>
-                </a>
-                <a href="https://www.instagram.com/bhajanmarg_official/" target="_blank" class="flex items-center p-4 bg-pink-50 rounded-xl border border-pink-200 shadow-sm">
-                    <span class="text-3xl mr-4">📸</span>
-                    <div>
-                        <p class="font-bold text-pink-700">Daily Darshan</p>
-                        <p class="text-xs text-pink-600">Instagram Updates</p>
+                </div>
+
+                <a href="http://googleusercontent.com/spotify.com/3" class="flex items-center p-4 bg-white rounded-3xl border border-pink-50 shadow-sm">
+                    <div class="w-12 h-12 bg-green-100 rounded-2xl flex items-center justify-center mr-4">🎵</div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-sm">Spotify Kirtan</h4>
+                        <p class="text-[10px] opacity-60">Meditative Chants & Bhajans</p>
                     </div>
+                    <span class="text-gray-300">→</span>
                 </a>
             </div>
         </div>
-    </main>
 
-    <nav class="h-20 bg-stone-900 flex justify-around items-center px-4 rounded-t-3xl shadow-2xl">
-        <button onclick="switchTab('jap')" class="text-center text-white opacity-60 focus:opacity-100">
-            <div class="text-2xl">📿</div>
-            <span class="text-[10px] uppercase">Jap</span>
-        </button>
-        <button onclick="switchTab('aarti')" class="text-center text-white opacity-60 focus:opacity-100">
-            <div class="text-2xl">📜</div>
-            <span class="text-[10px] uppercase">Aarti</span>
-        </button>
-        <button onclick="switchTab('gpt')" class="text-center text-white opacity-60 focus:opacity-100">
-            <div class="text-2xl">🙏</div>
-            <span class="text-[10px] uppercase">GPT</span>
-        </button>
-        <button onclick="switchTab('links')" class="text-center text-white opacity-60 focus:opacity-100">
-            <div class="text-2xl">🌐</div>
-            <span class="text-[10px] uppercase">Links</span>
-        </button>
-    </nav>
+        <nav class="absolute bottom-0 left-0 right-0 h-24 bg-white/80 backdrop-blur-xl flex justify-around items-center px-6 border-t border-pink-100 z-30">
+            <button onclick="showSection('jap')" class="nav-item flex flex-col items-center transition-all">
+                <div class="icon-circle w-10 h-10 rounded-xl flex items-center justify-center mb-1">📿</div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Jap</span>
+            </button>
+            <button onclick="showSection('gpt')" class="nav-item flex flex-col items-center transition-all">
+                <div class="icon-circle w-10 h-10 rounded-xl flex items-center justify-center mb-1">🙏</div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Guidance</span>
+            </button>
+            <button onclick="showSection('hub')" class="nav-item flex flex-col items-center transition-all">
+                <div class="icon-circle w-10 h-10 rounded-xl flex items-center justify-center mb-1">🌸</div>
+                <span class="text-[10px] font-bold uppercase tracking-widest">Hub</span>
+            </button>
+        </nav>
 
-    <audio id="bell" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
+    </div>
+
+    <audio id="bell-sound" src="https://assets.mixkit.co/active_storage/sfx/2568/2568-preview.mp3"></audio>
 
     <script>
-        // --- MALA LOGIC ---
-        const wrapper = document.getElementById('beads-wrapper');
-        const totalBeads = 108;
-        let count = 0;
-        let malas = 0;
-        let overallTotal = 0;
-
-        // Create 108 beads in a circle
-        for (let i = 0; i < totalBeads; i++) {
-            const angle = (i / totalBeads) * 2 * Math.PI;
-            const x = 144 + 130 * Math.cos(angle) - 5;
-            const y = 144 + 130 * Math.sin(angle) - 5;
-            const bead = document.createElement('div');
-            bead.className = i === 0 ? 'bead meru-bead' : 'bead';
-            bead.id = `bead-${i}`;
-            bead.style.left = `${x}px`;
-            bead.style.top = `${y}px`;
-            wrapper.appendChild(bead);
-        }
-
-        function handleJapTap() {
-            if (count < totalBeads) {
-                document.getElementById(`bead-${count}`).classList.add('active');
-                count++;
-                overallTotal++;
-            }
+        // --- UI Logic ---
+        function showSection(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.getElementById('section-' + id).classList.add('active');
             
-            if (count === totalBeads) {
-                malas++;
-                count = 0;
-                document.getElementById('bell').play();
-                if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
-                // Reset visual beads
-                setTimeout(() => {
-                    for(let i=0; i<totalBeads; i++) {
-                        document.getElementById(`bead-${i}`).classList.remove('active');
-                    }
-                }, 300);
-            } else {
-                if (window.navigator.vibrate) window.navigator.vibrate(20);
-            }
-            updateStats();
+            // Handle nav highlighting
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            event.currentTarget.classList.add('active');
         }
 
-        function updateStats() {
-            document.getElementById('counter').innerText = count;
-            document.getElementById('mala-count').innerText = malas;
-            document.getElementById('total-count').innerText = overallTotal;
-        }
+        // --- Mala Canvas Drawing ---
+        const canvas = document.getElementById('mala-canvas');
+        const ctx = canvas.getContext('2d');
+        canvas.width = 560; // Retinal resolution
+        canvas.height = 560;
+        ctx.scale(2, 2);
 
-        // --- NAVIGATION ---
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-            document.getElementById(tabId).classList.add('active');
-        }
+        let beadProgress = 0;
+        let totalMalas = 0;
+        let lifetimeJaps = 0;
 
-        // --- GPT CORNER LOGIC ---
-        function askGPT() {
-            const input = document.getElementById('userInput');
-            const history = document.getElementById('chat-history');
-            if (!input.value) return;
+        function drawMala() {
+            ctx.clearRect(0, 0, 280, 280);
+            const centerX = 140;
+            const centerY = 140;
+            const radius = 125;
+            const totalBeads = 108;
 
-            const userText = input.value;
-            history.innerHTML += `<p class='text-right'><b>You:</b> ${userText}</p>`;
-            
-            // Simulating Maharaj Ji's Response with Video Link
-            setTimeout(() => {
-                let response = "";
-                let videoLink = "https://www.youtube.com/@BhajanMarg";
+            for (let i = 0; i < totalBeads; i++) {
+                const angle = (i / totalBeads) * Math.PI * 2 - Math.PI / 2;
+                const x = centerX + radius * Math.cos(angle);
+                const y = centerY + radius * Math.sin(angle);
+
+                ctx.beginPath();
+                ctx.arc(x, y, i === 0 ? 6 : 4, 0, Math.PI * 2);
                 
-                if(userText.toLowerCase().includes("focus") || userText.toLowerCase().includes("ध्यान")) {
-                    response = "Pujya Maharaj Ji says: Keep the tongue moving. Chanting is the medicine; it doesn't matter if the mind is not steady yet. The focus will come by the grace of the Name itself.";
-                    videoLink = "https://www.youtube.com/watch?v=3NwZhYBZ_GE";
+                // Color logic
+                if (i < beadProgress) {
+                    ctx.fillStyle = '#C0396B';
+                    ctx.shadowColor = 'rgba(192, 57, 107, 0.4)';
+                    ctx.shadowBlur = 8;
                 } else {
-                    response = "Pujya Maharaj Ji often guides that surrender (Sharanagati) to Shri Radha is the ultimate path. Keep chanting 'Radhe Radhe'.";
+                    ctx.fillStyle = i === 0 ? '#E8A020' : '#E5E7EB';
+                    ctx.shadowBlur = 0;
+                }
+                ctx.fill();
+            }
+        }
+
+        function triggerJap() {
+            beadProgress++;
+            lifetimeJaps++;
+            
+            if (window.navigator.vibrate) window.navigator.vibrate(25);
+
+            if (beadProgress > 108) {
+                beadProgress = 1;
+                totalMalas++;
+                document.getElementById('bell-sound').play();
+                if (window.navigator.vibrate) window.navigator.vibrate([100, 50, 100]);
+            }
+
+            document.getElementById('bead-num').innerText = beadProgress;
+            document.getElementById('stat-mala').innerText = totalMalas;
+            document.getElementById('stat-total').innerText = lifetimeJaps;
+            drawMala();
+        }
+
+        // --- GPT Premanand Logic ---
+        function askMaharajJi() {
+            const input = document.getElementById('gpt-input');
+            const chatBox = document.getElementById('chat-box');
+            if (!input.value.trim()) return;
+
+            // User message
+            const userMsg = document.createElement('div');
+            userMsg.className = "bubble-user p-4 shadow-sm max-w-[85%]";
+            userMsg.innerHTML = `<p class="text-sm">${input.value}</p>`;
+            chatBox.appendChild(userMsg);
+
+            const query = input.value.toLowerCase();
+            input.value = "";
+
+            // Bot response thinking...
+            setTimeout(() => {
+                const botMsg = document.createElement('div');
+                botMsg.className = "bubble-bot p-4 shadow-sm max-w-[85%]";
+                
+                let answer = "लाड़ली जी की शरण में रहें और निरंतर नाम जाप करें। महाराज जी के इस सत्संग में आपके प्रश्न का उत्तर है।";
+                let vidId = "m-E6M97U5fA"; // Default official link
+
+                if (query.includes("focus") || query.includes("ध्यान") || query.includes("man")) {
+                    answer = "मन को रोकना असंभव है, उसे नाम में लगाइये। महाराज जी कहते हैं कि जैसे आप चलते हैं तो पैर हिलते हैं, वैसे ही जाप के समय मन को हिलने दें, पर जीभ को न रुकने दें।";
+                    vidId = "3NwZhYBZ_GE";
+                } else if (query.includes("gussa") || query.includes("anger")) {
+                    answer = "क्रोध आने पर शांत रहें और राधा नाम का सहारा लें। क्रोध भक्ति का नाश करता है।";
+                    vidId = "E7WAnwEshvM";
                 }
 
-                history.innerHTML += `
-                    <div class="bg-orange-50 p-3 rounded border border-orange-200">
-                        <p><b>Maharaj Ji:</b> ${response}</p>
-                        <a href="${videoLink}" target="_blank" class="text-blue-600 underline text-xs mt-2 block">Watch Maharaj Ji's Video Solution →</a>
-                    </div>`;
-                history.scrollTop = history.scrollHeight;
-            }, 1000);
-
-            input.value = "";
+                botMsg.innerHTML = `
+                    <p class="text-sm mb-3"><b>महाराज जी के शब्द:</b> ${answer}</p>
+                    <a href="https://www.youtube.com/watch?v=${vidId}" target="_blank" class="block rounded-xl overflow-hidden bg-black relative">
+                        <img src="https://img.youtube.com/vi/${vidId}/mqdefault.jpg" class="w-full opacity-70">
+                        <div class="absolute inset-0 flex items-center justify-center">
+                            <span class="bg-red-600 text-white px-3 py-1 rounded-lg text-[10px] font-bold">सत्संग देखें ▶</span>
+                        </div>
+                    </a>
+                `;
+                chatBox.appendChild(botMsg);
+                chatBox.parentElement.scrollTop = chatBox.parentElement.scrollHeight;
+            }, 800);
         }
+
+        // Initializing
+        drawMala();
+        
+        // Falling Petals Effect
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.innerHTML = "🌸";
+            petal.className = "petal";
+            petal.style.left = Math.random() * 100 + "vw";
+            petal.style.fontSize = (Math.random() * 10 + 10) + "px";
+            petal.style.animationDuration = (Math.random() * 5 + 5) + "s";
+            document.body.appendChild(petal);
+            setTimeout(() => petal.remove(), 10000);
+        }
+        setInterval(createPetal, 3000);
     </script>
 </body>
 </html>
