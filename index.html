@@ -3,239 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Shri Radha Ecosystem Pro</title>
+    <title>Shri Radha Kripa v3</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@700&family=Noto+Serif+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --lotus: #C0396B; --saffron: #E8A020; --cream: #FAF3E8; --gold: #D4AF37; }
-        
-        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; -webkit-tap-highlight-color: transparent; }
-        
-        /* Smooth View Transitions */
-        .view-section { display: none; height: 100%; overflow-y: auto; padding-bottom: 120px; animation: slideUp 0.3s ease-out; }
-        .view-section.active { display: block; }
-        
-        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        :root { --lotus: #C0396B; --cream: #FAF3E8; }
+        body { background-color: var(--cream); font-family: 'Noto Serif Devanagari', serif; overflow: hidden; }
 
-        /* Dashboard Grid Styling */
-        .grid-card { background: white; border-radius: 24px; padding: 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); border: 1px solid rgba(192, 57, 107, 0.05); transition: 0.2s; }
-        .grid-card:active { transform: scale(0.92); background: #fff1f2; }
+        /* Navigation Logic */
+        .app-view { display: none; height: 100vh; overflow-y: auto; padding-bottom: 120px; }
+        .app-view.active { display: block; animation: fadeIn 0.3s ease; }
+        
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* Bottom Nav Logic */
-        .nav-item.active-nav { color: var(--lotus); }
-        .nav-item.active-nav div { background: #fce7f3; transform: translateY(-5px); }
+        /* Grid Icons */
+        .icon-box { background: white; border-radius: 20px; padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-shadow: 0 4px 10px rgba(0,0,0,0.03); border: 1px solid #fce7f3; }
+        .icon-box:active { transform: scale(0.95); background: #fff1f2; }
 
-        /* Calendar Styling */
+        /* Custom Calendar */
         .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-        .cal-cell { aspect-ratio: 1; display: flex; items-center: center; justify-content: center; font-size: 0.8rem; border-radius: 50%; transition: 0.2s; }
-        .cal-today { background: var(--lotus); color: white; font-weight: bold; }
-        
-        /* GPT Bubbles */
-        .bubble { max-width: 85%; padding: 12px 16px; border-radius: 20px; margin-bottom: 12px; font-size: 0.9rem; }
-        .bot { background: white; border: 1px solid #eee; border-bottom-left-radius: 4px; }
-        .user { background: var(--lotus); color: white; border-bottom-right-radius: 4px; align-self: flex-end; }
+        .cal-day { aspect-ratio: 1; display: flex; items-center: center; justify-content: center; border-radius: 50%; font-size: 0.8rem; }
+        .today { background: var(--lotus); color: white; font-weight: bold; }
+
+        /* Persistent Nav */
+        nav button.active-nav { color: var(--lotus); border-top: 3px solid var(--lotus); }
     </style>
 </head>
-<body class="flex justify-center">
+<body>
 
-<div class="w-full max-w-md h-screen bg-white shadow-2xl relative flex flex-col overflow-hidden">
+<div class="max-w-md mx-auto bg-white h-screen relative overflow-hidden flex flex-col shadow-2xl">
     
-    <header class="p-5 flex justify-between items-center bg-white/80 backdrop-blur-md z-50 border-b border-stone-50">
+    <header class="p-5 flex justify-between items-center bg-white border-b z-50">
         <div>
-            <h1 id="header-title" class="text-xl font-bold text-pink-800 hindi">श्री राधा कृपा</h1>
+            <h1 class="text-xl font-bold text-pink-800 hindi">श्री राधा कृपा</h1>
             <p class="text-[9px] uppercase tracking-widest opacity-40 font-bold">Vrindavan Ecosystem</p>
         </div>
-        <div class="flex gap-3">
-            <button onclick="switchView('home')" class="p-2 bg-stone-100 rounded-full">🏠</button>
-        </div>
+        <button onclick="switchView('home')" class="w-10 h-10 bg-stone-100 rounded-full flex items-center justify-center">🏠</button>
     </header>
 
-    <main class="flex-1 relative overflow-hidden bg-[#FAF3E8]/30">
+    <main class="flex-1 relative">
         
-        <section id="view-home" class="view-section active p-5">
+        <section id="view-home" class="app-view active p-6">
+            <h2 class="text-lg font-bold mb-6 text-stone-700">Explore Ecosystem</h2>
             <div class="grid grid-cols-3 gap-4">
-                <button onclick="switchView('jap')" class="grid-card"><span>📿</span><p class="text-[10px] mt-2 font-bold uppercase">Naam Jap</p></button>
-                <button onclick="switchView('gpt')" class="grid-card"><span>🙏</span><p class="text-[10px] mt-2 font-bold uppercase">Guidance</p></button>
-                <button onclick="switchView('mood')" class="grid-card"><span>✨</span><p class="text-[10px] mt-2 font-bold uppercase">Mood Vani</p></button>
-                <button onclick="switchView('cal')" class="grid-card"><span>📅</span><p class="text-[10px] mt-2 font-bold uppercase">Calendar</p></button>
-                <button onclick="switchView('hub')" class="grid-card"><span>🌐</span><p class="text-[10px] mt-2 font-bold uppercase">Bhakti Hub</p></button>
-                <button onclick="switchView('aarti')" class="grid-card"><span>📜</span><p class="text-[10px] mt-2 font-bold uppercase">Aarti</p></button>
-                <button onclick="switchView('leela')" class="grid-card"><span>🌸</span><p class="text-[10px] mt-2 font-bold uppercase">Leela</p></button>
-                <button onclick="switchView('stotra')" class="grid-card"><span>🕉️</span><p class="text-[10px] mt-2 font-bold uppercase">Stotra</p></button>
-                <button onclick="switchView('braj')" class="grid-card"><span>🏰</span><p class="text-[10px] mt-2 font-bold uppercase">Darshan</p></button>
-                <button onclick="switchView('diary')" class="grid-card"><span>✍️</span><p class="text-[10px] mt-2 font-bold uppercase">Diary</p></button>
-                <button onclick="switchView('sewa')" class="grid-card"><span>🎁</span><p class="text-[10px] mt-2 font-bold uppercase">Sewa</p></button>
-                <button onclick="switchView('books')" class="grid-card"><span>📚</span><p class="text-[10px] mt-2 font-bold uppercase">Library</p></button>
-                <button onclick="switchView('art')" class="grid-card"><span>🖼️</span><p class="text-[10px] mt-2 font-bold uppercase">Art</p></button>
-                <button onclick="switchView('sangha')" class="grid-card"><span>🤝</span><p class="text-[10px] mt-2 font-bold uppercase">Sangha</p></button>
-                <button onclick="switchView('config')" class="grid-card"><span>⚙️</span><p class="text-[10px] mt-2 font-bold uppercase">Settings</p></button>
+                <div onclick="switchView('jap')" class="icon-box"><span>📿</span><p class="text-[9px] mt-2 font-bold uppercase">Jap</p></div>
+                <div onclick="switchView('gpt')" class="icon-box"><span>🙏</span><p class="text-[9px] mt-2 font-bold uppercase">Guidance</p></div>
+                <div onclick="switchView('mood')" class="icon-box"><span>✨</span><p class="text-[9px] mt-2 font-bold uppercase">Mood</p></div>
+                <div onclick="switchView('cal')" class="icon-box"><span>📅</span><p class="text-[9px] mt-2 font-bold uppercase">Calendar</p></div>
+                <div onclick="switchView('hub')" class="icon-box"><span>🌐</span><p class="text-[9px] mt-2 font-bold uppercase">Hub</p></div>
+                <div onclick="switchView('leela')" class="icon-box"><span>🌸</span><p class="text-[9px] mt-2 font-bold uppercase">Leela</p></div>
+                <div onclick="switchView('aarti')" class="icon-box"><span>📜</span><p class="text-[9px] mt-2 font-bold uppercase">Aarti</p></div>
+                <div onclick="switchView('darshan')" class="icon-box"><span>🏰</span><p class="text-[9px] mt-2 font-bold uppercase">Darshan</p></div>
+                <div onclick="switchView('stotra')" class="icon-box"><span>🕉️</span><p class="text-[9px] mt-2 font-bold uppercase">Stotra</p></div>
+                <div onclick="switchView('diary')" class="icon-box"><span>✍️</span><p class="text-[9px] mt-2 font-bold uppercase">Diary</p></div>
+                <div onclick="switchView('sewa')" class="icon-box"><span>🎁</span><p class="text-[9px] mt-2 font-bold uppercase">Sewa</p></div>
+                <div onclick="switchView('books')" class="icon-box"><span>📚</span><p class="text-[9px] mt-2 font-bold uppercase">Library</p></div>
+                <div onclick="switchView('art')" class="icon-box"><span>🖼️</span><p class="text-[9px] mt-2 font-bold uppercase">Art</p></div>
+                <div onclick="switchView('sangha')" class="icon-box"><span>🤝</span><p class="text-[9px] mt-2 font-bold uppercase">Sangha</p></div>
+                <div onclick="switchView('settings')" class="icon-box"><span>⚙️</span><p class="text-[9px] mt-2 font-bold uppercase">Settings</p></div>
             </div>
         </section>
 
-        <section id="view-jap" class="view-section p-5 flex flex-col items-center justify-center">
-            <div class="mb-10 text-center">
-                <p class="text-xs uppercase tracking-widest opacity-50 mb-1">Mala Count</p>
-                <h2 id="mala-val" class="text-4xl font-bold text-pink-700">0</h2>
-            </div>
-            <button onclick="handleJapTap()" class="w-56 h-56 bg-pink-700 rounded-full border-8 border-white shadow-2xl active:scale-95 transition flex flex-col items-center justify-center text-white">
-                <span class="hindi text-4xl mb-1">राधे</span>
-                <span id="bead-val" class="text-2xl opacity-60">0 / 108</span>
+        <section id="view-jap" class="app-view p-10 flex flex-col items-center">
+            <h2 class="text-3xl font-bold text-pink-700 mb-10" id="mala-total">0 Malas</h2>
+            <button onclick="handleJap()" class="w-64 h-64 rounded-full bg-pink-700 border-8 border-white shadow-2xl flex flex-col items-center justify-center text-white active:scale-95 transition">
+                <span class="hindi text-5xl">राधे</span>
+                <span class="text-xl mt-2 opacity-50" id="bead-count">0 / 108</span>
             </button>
         </section>
 
-        <section id="view-gpt" class="view-section flex flex-col">
-            <div id="chat-history" class="flex-1 p-5 overflow-y-auto flex flex-col">
-                <div class="bubble bot hindi shadow-sm">राधे राधे। आपको भक्ति में क्या समस्या आ रही है? पूछिए।</div>
+        <section id="view-gpt" class="app-view flex flex-col">
+            <div id="chat-window" class="flex-1 p-5 overflow-y-auto bg-stone-50 space-y-4">
+                <div class="bg-white p-3 rounded-lg border text-sm">राधे राधे! महाराज जी से क्या पूछना चाहते हैं?</div>
             </div>
             <div class="p-4 bg-white border-t flex gap-2">
-                <input type="text" id="gpt-in" placeholder="Ask Maharaj Ji..." class="flex-1 p-3 rounded-xl bg-stone-100 outline-none text-sm">
-                <button onclick="runGPT()" class="bg-orange-600 text-white px-5 rounded-xl font-bold">Seek</button>
+                <input type="text" id="gpt-input" placeholder="Ask Maharaj Ji..." class="flex-1 p-3 rounded-lg bg-stone-100 text-sm outline-none">
+                <button onclick="runGPT()" class="bg-orange-600 text-white px-6 rounded-lg font-bold">Seek</button>
             </div>
         </section>
 
-        <section id="view-mood" class="view-section p-5">
-            <h2 class="text-xl font-bold mb-5 hindi text-pink-800">आपका वर्तमान भाव?</h2>
-            <div class="grid grid-cols-2 gap-3 mb-8">
-                <button onclick="getVani('sad')" class="p-4 bg-white border rounded-2xl text-sm">Upset 😔</button>
-                <button onclick="getVani('peace')" class="p-4 bg-white border rounded-2xl text-sm">Peaceful 🧘</button>
-                <button onclick="getVani('fear')" class="p-4 bg-white border rounded-2xl text-sm">Fearful 😨</button>
-                <button onclick="getVani('love')" class="p-4 bg-white border rounded-2xl text-sm">Devotional 🌸</button>
-            </div>
-            <div id="vani-card" class="bg-gradient-to-br from-pink-600 to-pink-900 p-8 rounded-[2rem] text-white text-center italic shadow-xl hidden"></div>
-        </section>
-
-        <section id="view-cal" class="view-section p-5">
+        <section id="view-cal" class="app-view p-6">
             <div class="flex justify-between items-center mb-6">
                 <h3 id="cal-month" class="text-xl font-bold">Month</h3>
-                <div class="flex gap-2"><button onclick="moveMonth(-1)">◀</button><button onclick="moveMonth(1)">▶</button></div>
+                <div class="flex gap-4">
+                    <button onclick="changeMonth(-1)">◀</button>
+                    <button onclick="changeMonth(1)">▶</button>
+                </div>
             </div>
-            <div class="cal-grid font-bold text-center text-[10px] opacity-40 mb-2">
-                <span>SU</span><span>MO</span><span>TU</span><span>WE</span><span>TH</span><span>FR</span><span>SA</span>
+            <div class="cal-grid text-center text-[10px] font-bold opacity-30 mb-2">
+                <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span>FRI</span><span>SAT</span>
             </div>
             <div id="cal-days" class="cal-grid"></div>
         </section>
 
+        <section id="view-mood" class="app-view p-6">
+            <h2 class="text-xl font-bold mb-6 hindi">आपका भाव?</h2>
+            <div class="grid grid-cols-2 gap-4 mb-8">
+                <button onclick="setMood('upset')" class="p-4 bg-white border rounded-xl shadow-sm">Upset 😔</button>
+                <button onclick="setMood('happy')" class="p-4 bg-white border rounded-xl shadow-sm">Happy 🌸</button>
+                <button onclick="setMood('lost')" class="p-4 bg-white border rounded-xl shadow-sm">Lost 🌀</button>
+                <button onclick="setMood('peace')" class="p-4 bg-white border rounded-xl shadow-sm">Peace 🧘</button>
+            </div>
+            <div id="mood-output" class="p-8 rounded-3xl bg-pink-700 text-white text-center italic text-lg shadow-xl hidden"></div>
+        </section>
+
     </main>
 
-    <nav class="absolute bottom-0 left-0 right-0 h-24 bg-white/90 backdrop-blur-xl border-t border-stone-100 flex items-center justify-around px-4 z-[100]">
-        <button onclick="switchView('home')" class="nav-item flex flex-col items-center">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">🏠</div>
+    <nav class="absolute bottom-0 left-0 right-0 h-24 bg-white/95 backdrop-blur-md border-t flex justify-around items-center px-6 z-50">
+        <button onclick="switchView('home')" id="nav-home" class="flex flex-col items-center p-2">
+            <span class="text-xl">🏠</span>
             <span class="text-[8px] font-bold uppercase">Menu</span>
         </button>
-        <button onclick="switchView('jap')" class="nav-item flex flex-col items-center">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">📿</div>
+        <button onclick="switchView('jap')" id="nav-jap" class="flex flex-col items-center p-2">
+            <span class="text-xl">📿</span>
             <span class="text-[8px] font-bold uppercase">Jap</span>
         </button>
-        <button onclick="switchView('gpt')" class="nav-item flex flex-col items-center">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">🙏</div>
+        <button onclick="switchView('gpt')" id="nav-gpt" class="flex flex-col items-center p-2">
+            <span class="text-xl">🙏</span>
             <span class="text-[8px] font-bold uppercase">Guidance</span>
         </button>
-        <button onclick="switchView('cal')" class="nav-item flex flex-col items-center">
-            <div class="w-10 h-10 rounded-xl flex items-center justify-center mb-1 transition-all">📅</div>
-            <span class="text-[8px] font-bold uppercase">Calendar</span>
+        <button onclick="switchView('cal')" id="nav-cal" class="flex flex-col items-center p-2">
+            <span class="text-xl">📅</span>
+            <span class="text-[8px] font-bold uppercase">Cal</span>
         </button>
     </nav>
-
 </div>
 
 <script>
-    // --- 1. CORE NAVIGATION LOGIC (The Error Fix) ---
-    function switchView(viewId) {
-        // Hide all views
-        document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
-        // Show target view
-        const target = document.getElementById('view-' + viewId);
+    // 1. Navigation Controller (THE FIX)
+    function switchView(id) {
+        // Hide all
+        document.querySelectorAll('.app-view').forEach(v => v.classList.remove('active'));
+        // Show target
+        const target = document.getElementById('view-' + id);
         if(target) target.classList.add('active');
-        
-        // Update header
-        const titles = { home: 'श्री राधा कृपा', jap: 'नाम जप', gpt: 'मार्गदर्शन', mood: 'वाणी', cal: 'उत्सव कैलेंडर' };
-        document.getElementById('header-title').innerText = titles[viewId] || 'श्री राधा';
-        
-        // Update Bottom Nav Highlighting
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active-nav'));
-        const navMap = { home:0, jap:1, gpt:2, cal:3 };
-        if(navMap[viewId] !== undefined) document.querySelectorAll('.nav-item')[navMap[viewId]].classList.add('active-nav');
 
-        if(viewId === 'cal') renderCal();
+        // Nav Highlighting
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active-nav'));
+        const activeBtn = document.getElementById('nav-' + id);
+        if(activeBtn) activeBtn.classList.add('active-nav');
+
+        if(id === 'cal') renderCal();
     }
 
-    // --- 2. JAP LOGIC ---
+    // 2. Jap Logic
     let beads = 0, malas = 0;
-    function handleJapTap() {
+    function handleJap() {
         beads++;
         if(beads > 108) { beads = 1; malas++; }
-        document.getElementById('bead-val').innerText = `${beads} / 108`;
-        document.getElementById('mala-val').innerText = malas;
+        document.getElementById('bead-count').innerText = `${beads} / 108`;
+        document.getElementById('mala-total').innerText = `${malas} Malas`;
         if(navigator.vibrate) navigator.vibrate(30);
     }
 
-    // --- 3. MOOD LOGIC ---
+    // 3. Mood Logic
     const vanis = {
-        sad: "क्यों घबराते हो? श्री राधा जी सब देख रही हैं। बस नाम को पकड़ लो।",
-        peace: "शांति राधा रानी का प्रसाद है, इसे व्यर्थ के विवादों में मत खोना।",
-        fear: "माया कितनी भी डराए, तुम 'राधे राधे' पुकारते रहो। तुम सुरक्षित हो।",
-        love: "प्रेम ही मार्ग है, प्रेम ही गंतव्य है। निरंतर सेवा भाव रखें।"
+        upset: "राधा रानी सब देख रही हैं, विश्वास मत खोइये।",
+        happy: "यह खुशी लाड़ली जी का प्रसाद है।",
+        lost: "बस 'राधा राधा' पुकारिये, रास्ता अपने आप मिलेगा।",
+        peace: "शांति में ही प्रभु का वास है।"
     };
-    function getVani(m) {
-        const card = document.getElementById('vani-card');
-        card.innerText = vanis[m];
-        card.classList.remove('hidden');
+    function setMood(m) {
+        const out = document.getElementById('mood-output');
+        out.innerText = vanis[m];
+        out.classList.remove('hidden');
     }
 
-    // --- 4. GPT REDIRECTION LOGIC ---
+    // 4. GPT Logic
     function runGPT() {
-        const pin = document.getElementById('gpt-in');
-        const history = document.getElementById('chat-history');
-        if(!pin.value) return;
+        const input = document.getElementById('gpt-input');
+        const win = document.getElementById('chat-window');
+        if(!input.value) return;
 
-        history.innerHTML += `<div class="bubble user shadow-sm">${pin.value}</div>`;
-        const query = pin.value.toLowerCase();
-        pin.value = "";
+        win.innerHTML += `<div class="bg-pink-100 p-3 rounded-lg text-sm self-end ml-10">${input.value}</div>`;
+        const q = input.value.toLowerCase();
+        input.value = "";
 
         setTimeout(() => {
-            let res = "राधे राधे। महाराज जी कहते हैं - निरंतर अभ्यास करें।";
+            let res = "राधे राधे! निरंतर नाम जप करें।";
             let vid = "m-E6M97U5fA";
-            
-            if(query.includes("focus") || query.includes("ध्यान")) {
-                res = "मन का काम भागना है, जीभ का काम जपना। जीभ मत रोकिये।";
+            if(q.includes("focus") || q.includes("man")) {
+                res = "मन का काम है भागना, आपका काम है जपना।";
                 vid = "3NwZhYBZ_GE";
             }
-            
-            history.innerHTML += `
-                <div class="bubble bot shadow-sm">
-                    <p class="mb-3">${res}</p>
-                    <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" class="block rounded-lg overflow-hidden border">
-                        <img src="https://img.youtube.com/vi/${vid}/mqdefault.jpg" class="w-full">
-                        <div class="p-2 text-[10px] font-bold text-center">WATCH GUIDANCE ▶</div>
-                    </a>
+            win.innerHTML += `
+                <div class="bg-white p-3 rounded-lg border text-sm mr-10 shadow-sm">
+                    <p class="mb-2">${res}</p>
+                    <a href="https://www.youtube.com/watch?v=${vid}" target="_blank" class="text-blue-600 underline text-xs">Watch Video Solution</a>
                 </div>`;
-            history.scrollTop = history.scrollHeight;
+            win.scrollTop = win.scrollHeight;
         }, 800);
     }
 
-    // --- 5. CALENDAR LOGIC ---
-    let calDate = new Date();
+    // 5. Calendar Logic
+    let d = new Date();
     function renderCal() {
-        const daysContainer = document.getElementById('cal-days');
-        const monthHeader = document.getElementById('cal-month');
-        daysContainer.innerHTML = "";
+        const container = document.getElementById('cal-days');
+        const head = document.getElementById('cal-month');
+        container.innerHTML = "";
+        head.innerText = d.toLocaleString('default', { month: 'long', year: 'numeric' });
         
-        const year = calDate.getFullYear();
-        const month = calDate.getMonth();
-        monthHeader.innerText = calDate.toLocaleString('default', { month: 'long', year: 'numeric' });
+        const first = new Date(d.getFullYear(), d.getMonth(), 1).getDay();
+        const days = new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate();
 
-        const first = new Date(year, month, 1).getDay();
-        const total = new Date(year, month + 1, 0).getDate();
-
-        for(let i=0; i<first; i++) daysContainer.innerHTML += '<div></div>';
-        for(let i=1; i<=total; i++) {
-            const today = (i === new Date().getDate() && month === new Date().getMonth()) ? 'cal-today' : '';
-            daysContainer.innerHTML += `<div class="cal-cell ${today}">${i}</div>`;
+        for(let i=0; i<first; i++) container.innerHTML += '<div></div>';
+        for(let i=1; i<=days; i++) {
+            const isToday = (i === new Date().getDate() && d.getMonth() === new Date().getMonth()) ? 'today' : '';
+            container.innerHTML += `<div class="cal-day ${isToday}">${i}</div>`;
         }
     }
-    function moveMonth(d) { calDate.setMonth(calDate.getMonth() + d); renderCal(); }
+    function changeMonth(n) { d.setMonth(d.getMonth() + n); renderCal(); }
 
-    // Init
+    // Init Home
     switchView('home');
 </script>
 </body>
